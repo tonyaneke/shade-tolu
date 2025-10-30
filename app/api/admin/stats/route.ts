@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAllRSVPs, getRSVPStats, initializeRSVPTable } from "@/lib/db";
+import {
+  getAllRSVPs,
+  getRSVPStats,
+  initializeRSVPTable,
+  deleteRSVPById,
+} from "@/lib/db";
 
 const ADMIN_PASSWORD = "Sade&tolu2025";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { password, action } = body;
+    const { password, action, id } = body;
 
     // Verify password
     if (password !== ADMIN_PASSWORD) {
@@ -37,6 +42,23 @@ export async function POST(request: NextRequest) {
         );
       }
       return NextResponse.json({ success: true, attendees: attendees.data });
+    }
+
+    if (action === "delete") {
+      if (!id || typeof id !== "number") {
+        return NextResponse.json(
+          { error: "Missing or invalid id" },
+          { status: 400 }
+        );
+      }
+      const result = await deleteRSVPById(id);
+      if (!result.success) {
+        return NextResponse.json(
+          { error: "Failed to delete attendee" },
+          { status: 500 }
+        );
+      }
+      return NextResponse.json({ success: true });
     }
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });

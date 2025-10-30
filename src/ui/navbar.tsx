@@ -63,8 +63,8 @@ export function Navbar({ className = "" }: NavbarProps) {
         <div
           className={`relative flex items-center transition-all duration-300 ${
             scrolled
-              ? "px-4 py-[1.05rem] lg:py-[0.9rem]"
-              : "px-6 py-[1.4rem] lg:py-[1.2rem]"
+              ? "px-6 py-6 md:px-8 md:py-8 lg:px-4 lg:py-[0.9rem]"
+              : "px-8 py-8 md:px-10 md:py-10 lg:px-6 lg:py-[1.2rem]"
           }`}
         >
           {/* Logo - Positioned absolutely on the left */}
@@ -72,7 +72,7 @@ export function Navbar({ className = "" }: NavbarProps) {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="absolute left-4 lg:left-6"
+            className="absolute left-4 sm:left-6 md:left-8 lg:left-6"
           >
             <Link href="/">
               <motion.div
@@ -83,9 +83,13 @@ export function Navbar({ className = "" }: NavbarProps) {
                 <Image
                   src="/logo.png"
                   alt="Logo"
-                  width={scrolled ? 68 : 90}
-                  height={scrolled ? 68 : 90}
-                  className="object-contain transition-all duration-300"
+                  width={scrolled ? 60 : 80}
+                  height={scrolled ? 60 : 80}
+                  className="object-contain transition-all duration-300 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-[68px] lg:h-[68px]"
+                  style={{
+                    width: scrolled ? 60 : 80,
+                    height: scrolled ? 60 : 80,
+                  }}
                   priority
                 />
               </motion.div>
@@ -150,7 +154,7 @@ export function Navbar({ className = "" }: NavbarProps) {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="lg:hidden absolute right-4 w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 transition-all shadow-lg shadow-amber-500/40"
+            className="lg:hidden absolute right-4 sm:right-6 md:right-8 w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 flex items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 transition-all shadow-lg shadow-amber-500/40"
           >
             <motion.div
               initial={false}
@@ -158,9 +162,9 @@ export function Navbar({ className = "" }: NavbarProps) {
               transition={{ duration: 0.3 }}
             >
               {mobileMenuOpen ? (
-                <X className="w-5 h-5 text-white" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />
               ) : (
-                <Menu className="w-5 h-5 text-white" />
+                <Menu className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />
               )}
             </motion.div>
           </motion.button>
@@ -175,12 +179,12 @@ export function Navbar({ className = "" }: NavbarProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="lg:hidden absolute top-full mt-4 left-4 right-4 bg-white/90 backdrop-blur-xl rounded-3xl border border-gray-200/60 shadow-2xl shadow-gray-300/40 overflow-hidden"
+            className="lg:hidden absolute top-full mt-4 sm:mt-6 md:mt-8 left-4 sm:left-6 md:left-8 right-4 sm:right-6 md:right-8 bg-white/90 backdrop-blur-xl rounded-3xl border border-gray-200/60 shadow-2xl shadow-gray-300/40 overflow-hidden"
           >
             {/* Ambient glow */}
             <div className="absolute -inset-[1px] bg-gradient-to-r from-amber-100/40 via-yellow-100/40 to-amber-100/40 rounded-3xl blur opacity-50 -z-10"></div>
 
-            <div className="p-4 space-y-1">
+            <div className="p-4 sm:p-6 md:p-8 space-y-2 sm:space-y-2 md:space-y-3">
               {navLinks.map((link, index) => {
                 const isActive = pathname === link.href;
                 return (
@@ -192,7 +196,7 @@ export function Navbar({ className = "" }: NavbarProps) {
                       transition={{ delay: index * 0.05, duration: 0.3 }}
                       whileHover={{ scale: 1.02, x: 5 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`block px-5 py-3.5 hover:bg-amber-100/60 rounded-2xl transition-all duration-300 font-medium font-playfair-display-sc relative group ${
+                      className={`block px-4 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6 hover:bg-amber-100/60 rounded-2xl transition-all duration-300 font-medium font-playfair-display-sc relative group text-base sm:text-lg md:text-xl ${
                         isActive
                           ? "text-amber-600 bg-amber-100/60"
                           : "text-gray-700 hover:text-amber-600"

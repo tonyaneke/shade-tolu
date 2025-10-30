@@ -59,6 +59,9 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [attendees, setAttendees] = useState<Attendee[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   // Check if already authenticated in session
   useEffect(() => {
@@ -139,6 +142,41 @@ export default function AdminDashboard() {
       attendee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       attendee.access_code.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const openDeleteModal = (attendeeId: number) => {
+    setPendingDeleteId(attendeeId);
+    setConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDeleteId) return;
+    setActionLoading(true);
+    try {
+      const pass = sessionStorage.getItem("adminPassword") || password;
+      const res = await fetch("/api/admin/stats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          password: pass,
+          action: "delete",
+          id: pendingDeleteId,
+        }),
+      });
+      if (res.ok) {
+        setAttendees((prev) => prev.filter((a) => a.id !== pendingDeleteId));
+        fetchData(pass);
+        setConfirmOpen(false);
+        setPendingDeleteId(null);
+      } else {
+        setError("Failed to delete attendee");
+      }
+    } catch (e) {
+      console.error(e);
+      setError("An error occurred while deleting attendee");
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   const exportToCSV = () => {
     const headers = [
@@ -563,6 +601,9 @@ export default function AdminDashboard() {
                       <th className="text-left py-3 px-4 font-semibold text-gray-700">
                         RSVP Date
                       </th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -600,6 +641,14 @@ export default function AdminDashboard() {
                               }
                             )}
                           </td>
+                          <td className="py-3 px-4">
+                            <button
+                              onClick={() => openDeleteModal(attendee.id)}
+                              className="px-3 py-1.5 text-sm rounded-lg bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition-colors"
+                            >
+                              Delete
+                            </button>
+                          </td>
                         </motion.tr>
                       ))}
                     </AnimatePresence>
@@ -618,6 +667,54 @@ export default function AdminDashboard() {
           </Card>
         </motion.div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {confirmOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() => (!actionLoading ? setConfirmOpen(false) : null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: "spring", damping: 20, stiffness: 200 }}
+              className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Confirm Deletion
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  This will permanently remove the attendee from the list. This
+                  action cannot be undone.
+                </p>
+                <div className="flex items-center justify-end gap-3">
+                  <button
+                    onClick={() => setConfirmOpen(false)}
+                    disabled={actionLoading}
+                    className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    disabled={actionLoading}
+                    className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+                  >
+                    {actionLoading ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

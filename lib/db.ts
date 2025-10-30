@@ -184,3 +184,19 @@ export async function getRSVPStats() {
 
 // Export the pool for advanced usage
 export { pool };
+
+/**
+ * Delete an RSVP by id
+ */
+export async function deleteRSVPById(id: number) {
+  const client = await pool.connect();
+  try {
+    const result = await client.query(`DELETE FROM rsvps WHERE id = $1`, [id]);
+    return { success: true, data: { deleted: result.rowCount || 0 } };
+  } catch (error) {
+    console.error("Error deleting RSVP:", error);
+    return { success: false, error };
+  } finally {
+    client.release();
+  }
+}

@@ -26,74 +26,60 @@ interface TimelineStoryProps {
 const defaultEvents: TimelineEvent[] = [
   {
     id: 1,
-    title: "University Days",
-    date: "2015 - 2019",
-    description:
-      "Our paths crossed at the university campus, where we first met in a crowded lecture hall. Little did we know, this was just the beginning of something extraordinary. We were both ambitious students with big dreams, navigating the exciting world of higher education. Between classes, study groups, and campus activities, we found ourselves in the same circles more often than we expected. There was an instant connection, a natural ease in each other's presence that felt both comfortable and electrifying. Those university halls became the backdrop for the start of something beautiful.",
-    image: "/first.jpg",
+    title: "THE MEETING “Hello, May I Join You?",
+    date: "2010",
+    description: `Our story began in 2010, at the University of Port Harcourt.
+            I was seated in Basic Hall, just starting my pre-degree program in Petroleum Engineering, when this beautiful young lady walked in — Shade.
+            She wore a simple white top and a black skirt, yet there was something effortlessly graceful about her. She smiled, looked around, and then asked softly, "Hello, may I join you?"
+            I said yes — not realizing that single moment would mark the beginning of a story far beyond what either of us imagined.
+            We didn’t know it then, but that seat in Basic Hall wasn’t just about academics; it was destiny quietly taking its place.
+            So, sit back, relax, and let us take you on a journey — one of friendship, timing, and the kind of love that only time could reveal.`,
+    image: "https://i.postimg.cc/y6GL2yL1/C1.png",
     side: "left",
   },
   {
     id: 2,
-    title: "The First Conversation",
-    date: "September 2016",
+    title: "Side by Side — The Beginning of Friendship",
+    date: "2012",
     description:
-      "A simple conversation about a class project turned into hours of talking. We discovered our shared love for adventure, music, and dreams of the future. What started as a casual discussion about academic work evolved into deep conversations about life, aspirations, and everything in between. We talked about our favorite books, the places we wanted to travel, and the impact we hoped to make in the world. Time seemed to stand still as we found ourselves completely absorbed in each other's words. That day, we realized we had found someone who truly understood us, someone who saw the world through a similar lens yet brought a unique perspective that enriched our own.",
-    image: "/second.jpg",
+      "We didn’t say much that day — just exchanged names, courses, and a few polite smiles. But as the weeks went by, life seemed to keep crossing our paths in the most unexpected ways. What began as simple hellos turned into longer conversations, shared jokes, and eventually, a genuine friendship. Before long, we became study partners — spending long hours in the library, sharing notes, and motivating each other to stay focused. At that stage, it was all about academics. Romance wasn’t even a thought; we were just two young dreamers helping each other chase success. Looking back now, it’s beautiful how something so ordinary — shared notes and study sessions — quietly laid the foundation for a story neither of us saw coming.",
+    image: "https://i.postimg.cc/pLRcBX0z/C360-2017-10-01-23-32-42-659.jpg",
     side: "right",
   },
   {
     id: 3,
-    title: "Best Friends",
+    title: "The Twist That Drew Us Closer",
     date: "2017",
     description:
-      "Through late-night study sessions and campus events, we became inseparable friends. Our bond grew stronger with each passing day. We were there for each other through exam stress, celebrating victories and supporting each other through challenges. Whether it was grabbing coffee between classes, exploring the city on weekends, or simply sitting in comfortable silence while studying, every moment felt special. Our friendship was built on trust, laughter, and genuine care for each other's wellbeing. Friends started calling us inseparable, and honestly, we didn't mind. We had found not just a friend, but a kindred spirit who made life's journey infinitely more enjoyable.",
-    image: "/third.jpg",
+      "After completing our one-year Basic Program at the University of Port Harcourt, Shade and I stayed in touch — checking in on each other often and eagerly awaiting the release of the admission list.My heart was set on Petroleum Engineering, while she dreamt passionately about Medicine and Surgery. But as fate would have it, destiny had a different script for us. When the admission list finally came out, we both found our names under Geology — a course neither of us had ever imagined studying. There was excitement, yes, but also a quiet mix of surprise and uncertainty. We had achieved the dream of gaining admission, yet it wasn’t quite the dream we had envisioned. After days of deep thought and prayer, I chose to embrace the new path before me. Interestingly, Shade had come to the same conclusion. We both accepted the offer and began our registration process — together.  Looking back now, it feels almost poetic how life aligned our journeys once again — not just in the same university, but in the same department, with sequential matric numbers: mine 026, hers 027. We even got to sit side by side during exams. Was that the stage being set for our story of love?Move on to the next chapter to find out.",
+    image: "https://i.postimg.cc/NfmCvr9w/c2.png",
     side: "left",
   },
   {
     id: 4,
-    title: "After University",
-    date: "2019",
+    title: "Unspoken Feelings",
+    date: "2016",
     description:
-      "Graduation came, and life took us on different paths. But distance only made our connection deeper. We stayed in touch, supporting each other through new careers and life changes. As we stepped into the professional world, our lives became busier and more complex. New jobs, new cities, new responsibilities – everything was changing. Yet through it all, we made time for each other. Late-night phone calls, weekend video chats, and occasional visits became our lifeline. We celebrated each other's career milestones, offered advice during difficult times, and remained each other's biggest cheerleaders. The physical distance taught us the value of our connection, proving that true bonds transcend geography.",
-    image: "/fourth.jpg",
+      "We’re sorry to disappoint you — no, we didn’t start a romantic relationship.Were there feelings? Yes. Undeniably so. But for reasons of preserving and prioritizing our genuine friendship, I was not willing to jeopardize access to her for expression of my feelings. I chose to be silent over confession. What followed was four years of unspoken emotions wrapped in genuine friendship. We built a bond that was honest, easy, and deeply comforting — a kind of friendship that didn’t need words to be understood. We studied together late into the night, helped each other with assignments, and shared countless moments of laughter, support, and quiet admiration. Life, however, had its own plans. Along the way, we each embarked on separate journeys of love — with different people, in search of something we didn’t realize we already had. We celebrated each other’s highs and offered shoulders during the lows, never crossing the line, yet never truly apart. Looking back, it’s almost poetic how we spent those years side by side, learning not just about rocks and minerals, strikes and deeps, field trips but about patience, timing, and the quiet power of destiny at work behind the scenes.",
+    image: "https://i.postimg.cc/tCsy3kMj/c4.jpg",
     side: "right",
   },
   {
     id: 5,
-    title: "Reconnecting",
+    title: "Time and Distance — Life After Uni",
     date: "2020",
     description:
-      "A chance meeting at a mutual friend's party reignited the spark. This time, we both knew there was something more than friendship between us. After months of being apart, fate brought us together in the same room again. The moment our eyes met across that crowded party, it felt like coming home. We spent the entire evening talking, laughing, and reminiscing about old times while creating new memories. But something was different this time. The spark between us was undeniable, electric. We both felt it – this wasn't just friendship anymore. There was a deeper connection, an unspoken understanding that our relationship was evolving into something more beautiful and profound.",
-    image: "/gallery/shade-tolu.jpg",
+      "Then came the NYSC year — that inevitable season where life begins to scatter friends across the country. I was posted to Abuja, while she found herself in Jos. But somehow, it never really felt like we were apart. The distance didn’t break our connection; if anything, it refined it. We shared laughter, stories, and small wins from our new worlds. We were intentional about staying in touch — not out of obligation, but out of genuine care. We encouraged each other’s growth, discussed our career dreams, and found new ways to show up for one another, even from miles away. Adulthood had begun to test us — with its demands, decisions, and uncertainties — yet our friendship only grew deeper. When NYSC came to an end, she moved to Lagos, chasing the next chapter of her life and exploring what the city had in store. I, on the other hand, chose to remain in Abuja, charting my own course and building my path one step at a time. Years went by — yet through it all, our bond remained unshaken. We celebrated milestones together, cheered for each other’s achievements, and watched time turn our friendship into something rare and beautiful. Seven, eight, nine, ten, eleven, twelve years of friendship…And still, we stood — not knowing that all those years of consistency, patience, and quiet affection were leading us toward something far greater than friendship.",
+    image: "https://i.postimg.cc/QMtRDdZr/c3.png",
     side: "left",
   },
   {
     id: 6,
-    title: "First Date",
+    title: "When Friendship Found Love",
     date: "January 2021",
     description:
-      "Our first official date was magical. A cozy restaurant, endless conversation, and the realization that we had been falling for each other all along. The nervous excitement we felt was adorable – after all these years of knowing each other, we were experiencing butterflies all over again. The ambiance was perfect, the food delicious, but what made the evening truly special was us. We talked about everything – our hopes, our fears, our dreams for the future. And somewhere between the appetizers and dessert, we both realized what had always been there: we were meant to be more than friends. That night marked the beginning of our romantic journey, and we couldn't have been more certain that this was right.",
-    image: "/gallery/shade-tolu2.jpg",
-    side: "right",
-  },
-  {
-    id: 7,
-    title: "Adventures Together",
-    date: "2021 - 2022",
-    description:
-      "From weekend getaways to simple walks in the park, every moment together was an adventure. We traveled, laughed, and built memories that would last a lifetime. We explored new cities, tried exotic cuisines, hiked scenic trails, and discovered hidden gems in our own backyard. But the adventures weren't just about the places we went – they were about experiencing life together, supporting each other's passions, and growing as individuals and as a couple. We learned each other's quirks, celebrated our differences, and found joy in both grand adventures and quiet moments. Whether we were dancing in the rain or watching sunsets from our favorite spot, every experience was enriched by having each other by our side.",
-    image: "/gallery/shade-1.jpg",
-    side: "left",
-  },
-  {
-    id: 8,
-    title: "Meeting the Families",
-    date: "December 2022",
-    description:
-      "The holidays brought us closer as we introduced each other to our families. Their love and acceptance made us realize we had found our forever home in each other. Meeting each other's families was both exciting and nerve-wracking, but it exceeded all expectations. Our families welcomed us with open arms, treating us not as visitors but as family from day one. We shared meals, stories, traditions, and laughter. Seeing how naturally we fit into each other's families, how our loved ones embraced our relationship, made everything feel even more real and beautiful. The warmth and love we experienced during those family gatherings confirmed what we already knew in our hearts – we were building something lasting, something that extended beyond just the two of us.",
-    image: "/gallery/shade-2.jpg",
+      "In our thirteenth year of friendship, something shifted — voice was given to surpressed emotions of over a decade. In what could only be described as an unconventional moment, I finally asked her out. It wasn’t rehearsed or grand — just honest. But that simple question stirred up a flood of emotions and memories, gently unveiling what had been hidden in plain sight all along. We laughed, we reminisced, and then came the question that lingered between smiles and silence — “What took us so long?” Perhaps it was timing. Perhaps it was destiny’s way of preparing us for each other.After years of friendship, shared dreams, and unspoken feelings, we both knew it was time to embrace what had always been there. And so, we took the leap — from friends to lovers — not as strangers discovering something new, but as two souls finally recognizing what life had been quietly writing all these years. Today, when I look at her, I don’t just see the girl from Basic Hall or my friend from Geology class. I see my answered prayer, my constant, my home and safe haven. Thirteen years of friendship, and a lifetime of love ahead.Our story didn’t begin with sparks — it began with friendship.But now, it burns with a flame only time and destiny could have kindled.",
+    image: "https://i.postimg.cc/tJZq4z0t/IMG-5680.avif",
     side: "right",
   },
   {
@@ -278,7 +264,7 @@ export const TimelineStory: FC<TimelineStoryProps> = ({
                         </p>
                       </motion.div>
                       <motion.h3
-                        className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent mb-4 font-playfair-display-sc leading-tight"
+                        className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight tracking-tight"
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
@@ -287,7 +273,7 @@ export const TimelineStory: FC<TimelineStoryProps> = ({
                         {event.title}
                       </motion.h3>
                       <motion.p
-                        className="text-gray-700 leading-relaxed text-lg"
+                        className="text-gray-800 text-[1.05rem] md:text-[1.125rem] leading-8 md:leading-9 max-w-prose text-justify"
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}

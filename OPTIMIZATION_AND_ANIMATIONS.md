@@ -378,3 +378,6 @@ As requested, the following were **left untouched**:
 ✅ **Mobile optimized** - Works great on all devices
 
 **Result**: A more polished, professional, and performant wedding website! 🎊
+
+
+

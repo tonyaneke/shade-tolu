@@ -17,9 +17,9 @@ interface RegistrySectionProps {
 }
 
 const defaultBankDetails: BankDetails = {
-  bankName: "First Bank of Nigeria",
-  accountName: "Shade & Tolu Wedding",
-  accountNumber: "1234567890",
+  bankName: "Zenith",
+  accountName: "Shade Odeleye",
+  accountNumber: "2368681288",
 };
 
 const CopyButton: FC<{ text: string; label: string }> = ({ text, label }) => {

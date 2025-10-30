@@ -9,15 +9,30 @@ const CircularGallery = dynamic(() => import("@/components/CircularGallery"), {
 });
 
 const galleryItems = [
-  { image: "/gallery/shade-tolu.jpg", text: "Shade & Tolu" },
-  { image: "/gallery/shade-tolu2.jpg", text: "Together Forever" },
-  { image: "/gallery/mich-shade.jpg", text: "Beautiful Moments" },
-  { image: "/gallery/michael-flowers.jpg", text: "Sweet Gestures" },
-  { image: "/gallery/micheal-smile.jpg", text: "Joy & Happiness" },
-  { image: "/gallery/shade-1.jpg", text: "Radiant Bride" },
-  { image: "/gallery/shade-2.jpg", text: "Elegance" },
-  { image: "/gallery/shade-3.jpg", text: "Grace & Beauty" },
-  { image: "/gallery/shade-ring.jpg", text: "The Ring" },
+  {
+    image: "https://i.postimg.cc/d1HRKzk3/Shade-Tolulope16.jpg",
+    text: "Shade & Tolulope",
+  },
+  {
+    image: "https://i.postimg.cc/sD161Jsn/Shade-et-Tolu-Family-15.jpg",
+    text: "Family Love",
+  },
+  { image: "https://i.postimg.cc/TYRxsFjr/001.jpg", text: "Beautiful Wedding" },
+  { image: "https://i.postimg.cc/L66dDfRX/003.jpg", text: "Elegant Moments" },
+  {
+    image: "https://i.postimg.cc/CLv3Q1xg/IMG-5711.avif",
+    text: "Wedding Ceremony",
+  },
+  {
+    image: "https://i.postimg.cc/nhg6nPm0/IMG-5837.avif",
+    text: "Special Moments",
+  },
+  { image: "https://i.postimg.cc/bJHMHYBM/IMG-5861.avif", text: "Celebration" },
+  {
+    image: "https://i.postimg.cc/65Hkm35D/IMG-7827.jpg",
+    text: "Wedding Portrait",
+  },
+  { image: "https://i.postimg.cc/9MtStXn1/IMG-9813.avif", text: "Wedding Day" },
 ];
 
 export const CoupleImagesCarousel: FC = () => {
@@ -60,10 +75,8 @@ export const CoupleImagesCarousel: FC = () => {
           <CircularGallery
             items={galleryItems}
             bend={3}
-            textColor="#000000"
             borderRadius={0.05}
             scrollEase={0.02}
-            font="bold 35px Tangerine"
           />
         </div>
       </div>

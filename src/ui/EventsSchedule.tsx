@@ -28,11 +28,11 @@ const defaultEvents: WeddingEvent[] = [
     title: "Traditional Wedding",
     time: "8:00 AM - 11:00 AM",
     date: "December 26, 2025",
-    location: "Family Residence",
-    address: "45 Victoria Island Road, Lagos, Nigeria",
+    location: "K&M Event Center",
+    address: "1 Dayo Kuye Cl, Ifako-Ijaiye, Lagos, Nigeria",
     description:
       "Join us for our traditional Nigerian wedding ceremony as we honor our heritage and celebrate with our families in the customary way.",
-    mapUrl: "https://maps.google.com/?q=Victoria+Island+Lagos",
+    mapUrl: "https://maps.google.com/?q=K%26M+Event+Center+Ifako-Ijaiye+Lagos",
     image: "/trad.png",
   },
   {
@@ -40,11 +40,12 @@ const defaultEvents: WeddingEvent[] = [
     title: "Church Ceremony",
     time: "11:00 AM - 1:00 PM",
     date: "December 26, 2025",
-    location: "Cathedral Church of Christ",
-    address: "29 Marina Street, Lagos Island, Lagos, Nigeria",
+    location: "Heritage of Faith",
+    address: "Inside LTV 8 Agidingbi opposite Coca-Cola, Lagos, Nigeria",
     description:
-      "Witness our sacred vows as we exchange promises before God in the beautiful Cathedral Church of Christ. The ceremony will be followed by photo sessions.",
-    mapUrl: "https://maps.google.com/?q=Cathedral+Church+Christ+Lagos",
+      "Witness our sacred vows as we exchange promises before God in the beautiful Heritage of Faith church. The ceremony will be followed by photo sessions.",
+    mapUrl:
+      "https://maps.google.com/?q=Heritage+of+Faith+LTV+8+Agidingbi+Lagos",
     image: "/church.png",
   },
   {
@@ -52,11 +53,11 @@ const defaultEvents: WeddingEvent[] = [
     title: "Reception & Dinner",
     time: "3:00 PM - 9:00 PM",
     date: "December 26, 2025",
-    location: "The Civic Centre",
-    address: "Ozumba Mbadiwe Avenue, Victoria Island, Lagos, Nigeria",
+    location: "K&M Event Center",
+    address: "1 Dayo Kuye Cl, Ifako-Ijaiye, Lagos, Nigeria",
     description:
       "Celebrate with us at an elegant reception featuring cocktails, dinner, live music, and dancing. Let's create unforgettable memories together!",
-    mapUrl: "https://maps.google.com/?q=Civic+Centre+Victoria+Island+Lagos",
+    mapUrl: "https://maps.google.com/?q=K%26M+Event+Center+Ifako-Ijaiye+Lagos",
     image: "/nigeria-wedding.png",
   },
 ];
