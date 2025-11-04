@@ -97,6 +97,7 @@ export const metadata: Metadata = {
 };
 
 import { SmoothScroll } from "@/src/ui/SmoothScroll";
+import { QueryProvider } from "@/lib/query-client";
 
 export default function RootLayout({
   children,
@@ -108,7 +109,9 @@ export default function RootLayout({
       <body
         className={`${playfairDisplaySC.variable} ${inter.variable} ${tangerine.variable} antialiased`}
       >
-        <SmoothScroll>{children}</SmoothScroll>
+        <QueryProvider>
+          <SmoothScroll>{children}</SmoothScroll>
+        </QueryProvider>
       </body>
     </html>
   );

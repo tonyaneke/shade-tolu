@@ -1,38 +1,19 @@
 "use client";
 
-import { FC, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { Heart } from "lucide-react";
+import { FC } from "react";
+import { motion } from "motion/react";
+import { useQuery } from "@tanstack/react-query";
 import { ScrollReveal } from "./ScrollReveal";
-
-interface Message {
-  name: string;
-  message: string;
-  date: string;
-}
+import { fetchMessages, type Message } from "@/lib/api";
 
 export const WordsFromFriends: FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading } = useQuery({
+    queryKey: ["messages"],
+    queryFn: fetchMessages,
+    select: (data) => data.messages,
+  });
 
-  useEffect(() => {
-    fetchMessages();
-  }, []);
-
-  const fetchMessages = async () => {
-    try {
-      const response = await fetch("/api/messages");
-      const data = await response.json();
-
-      if (data.success) {
-        setMessages(data.messages);
-      }
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const messages = data || [];
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -47,7 +28,7 @@ export const WordsFromFriends: FC = () => {
     return name.charAt(0).toUpperCase();
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <section className="py-24 px-6 bg-gradient-to-b from-white via-amber-50/30 to-white">
         <div className="max-w-7xl mx-auto text-center">

@@ -1,9 +1,11 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { UploadCloud, X, AlertCircle, CheckCircle2 } from "lucide-react";
+import { fetchCloudinaryImages, uploadToCloudinary, type CloudinaryImage } from "@/lib/api";
 
 type UploadedItem = {
   id: string;
@@ -36,14 +38,12 @@ type UploadStatus = {
 };
 
 export default function LiveGallery({ className = "" }: LiveGalleryProps) {
-  const [items, setItems] = useState<UploadedItems>([]);
-  const [loading, setLoading] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<UploadedItem | null>(null);
   const [errors, setErrors] = useState<UploadError[]>([]);
   const [uploadStatuses, setUploadStatuses] = useState<UploadStatus[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const queryClient = useQueryClient();
 
   type UploadedItems = UploadedItem[];
 
@@ -66,70 +66,72 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
     }
   };
 
-  const persist = (next: UploadedItems) => {
-    setItems(next);
-    try {
-      window.localStorage.setItem("live-uploads", JSON.stringify(next));
-      // Dispatch custom event to notify gallery of new uploads
-      window.dispatchEvent(new Event("live-uploads-updated"));
-    } catch {
-      // ignore
-    }
-  };
-
-  // Fetch images from Cloudinary on mount and periodically
-  const fetchImages = useCallback(async () => {
-    try {
-      const response = await fetch("/api/cloudinary/images");
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && data.images) {
-          const cloudinaryItems: UploadedItems = data.images.map((img: any) => ({
-            id: img.id,
-            url: optimized(img.url),
-            width: img.width,
-            height: img.height,
-            createdAt: img.createdAt,
-          }));
-          setItems(cloudinaryItems);
-          // Sync to localStorage
-          try {
-            window.localStorage.setItem("live-uploads", JSON.stringify(cloudinaryItems));
-          } catch {
-            // ignore
-          }
-        }
+  // Fetch images using TanStack Query
+  const { data: imagesData, isLoading: loading } = useQuery({
+    queryKey: ["cloudinary-images"],
+    queryFn: fetchCloudinaryImages,
+    refetchInterval: 30000, // Refetch every 30 seconds
+    select: (data) => {
+      if (data.success && data.images) {
+        return data.images.map((img: CloudinaryImage) => ({
+          id: img.id,
+          url: optimized(img.url),
+          width: img.width,
+          height: img.height,
+          createdAt: img.createdAt,
+        })) as UploadedItems;
       }
-    } catch (error) {
-      console.error("Error fetching images from Cloudinary:", error);
-      // Fallback to localStorage if API fails
+      return [];
+    },
+    onSuccess: (items) => {
+      // Sync to localStorage
+      try {
+        window.localStorage.setItem("live-uploads", JSON.stringify(items));
+        window.dispatchEvent(new Event("live-uploads-updated"));
+      } catch {
+        // ignore
+      }
+    },
+    onError: () => {
+      // Error handling - fallback is handled via useEffect
+    },
+  });
+
+  // Handle localStorage fallback on error
+  useEffect(() => {
+    if (!imagesData && typeof window !== "undefined") {
       try {
         const raw = window.localStorage.getItem("live-uploads");
         if (raw) {
           const localItems = JSON.parse(raw) as UploadedItems;
-          setItems(localItems);
+          // This will be handled by the query's error state
         }
       } catch {
         // ignore
       }
-    } finally {
-      setLoading(false);
     }
-  }, []);
+  }, [imagesData]);
 
-  // Fetch on mount
-  useEffect(() => {
-    fetchImages();
-  }, [fetchImages]);
+  const items = imagesData || [];
 
-  // Refresh every 30 seconds to get new uploads
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchImages();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [fetchImages]);
+  // Upload mutation
+  const uploadMutation = useMutation({
+    mutationFn: (file: File) => {
+      if (!CLOUD_NAME || !UPLOAD_PRESET) {
+        throw new Error("Cloudinary is not configured");
+      }
+      return uploadToCloudinary({
+        file,
+        cloudName: CLOUD_NAME,
+        uploadPreset: UPLOAD_PRESET,
+        folder: FOLDER,
+      });
+    },
+    onSuccess: () => {
+      // Refetch images after successful upload
+      queryClient.invalidateQueries({ queryKey: ["cloudinary-images"] });
+    },
+  });
 
   const validateFile = (file: File): string | null => {
     // Check file type
@@ -192,39 +194,15 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
         return; // All files failed validation
       }
 
-      setUploading(true);
       setUploadStatuses(
         validFiles.map((f) => ({ fileName: f.name, status: "uploading" as const }))
       );
 
-      const endpoint = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
-      const successfulUploads: UploadedItem[] = [];
-
-      for (let i = 0; i < validFiles.length; i++) {
-        const file = validFiles[i];
-        
-        const form = new FormData();
-        form.append("file", file);
-        form.append("upload_preset", UPLOAD_PRESET);
-        if (FOLDER) {
-          form.append("folder", FOLDER);
-        }
-
+      // Upload all files
+      const uploadPromises = validFiles.map(async (file) => {
         try {
-          const res = await fetch(endpoint, { method: "POST", body: form });
+          const data = await uploadMutation.mutateAsync(file);
           
-          if (!res.ok) {
-            const errorData = await res.json().catch(() => ({}));
-            const errorMessage = errorData.error?.message || `Upload failed with status ${res.status}`;
-            throw new Error(errorMessage);
-          }
-
-          const data = (await res.json()) as any;
-          
-          if (!data.secure_url && !data.url) {
-            throw new Error("Upload succeeded but no image URL was returned");
-          }
-
           const url = optimized(data.secure_url || data.url);
           const uploadedItem: UploadedItem = {
             id: data.asset_id || data.public_id || `${file.name}-${Date.now()}`,
@@ -234,8 +212,6 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
             createdAt: data.created_at || new Date().toISOString(),
           };
 
-          successfulUploads.push(uploadedItem);
-          
           // Update status to success
           setUploadStatuses((prev) =>
             prev.map((s) =>
@@ -244,6 +220,8 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
                 : s
             )
           );
+
+          return uploadedItem;
         } catch (error: any) {
           const errorMessage =
             error.message || "An unexpected error occurred during upload";
@@ -258,26 +236,18 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
                 : s
             )
           );
+          return null;
         }
-      }
+      });
 
-      // Add successful uploads to the gallery
-      if (successfulUploads.length > 0) {
-        const next = [...successfulUploads, ...items];
-        persist(next);
-        // Refresh from Cloudinary after a short delay to ensure sync
-        setTimeout(() => {
-          fetchImages();
-        }, 1000);
-      }
+      await Promise.all(uploadPromises);
 
       // Clear statuses after a delay
       setTimeout(() => {
         setUploadStatuses([]);
-        setUploading(false);
       }, 2000);
     },
-    [items, canUpload, CLOUD_NAME, UPLOAD_PRESET, addError, fetchImages]
+    [canUpload, addError, uploadMutation]
   );
 
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -406,7 +376,7 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
 
         {/* Upload Status */}
         <AnimatePresence>
-          {uploading && (
+          {uploadMutation.isPending && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

@@ -13,6 +13,9 @@ export default function RSVPPage() {
             <p className="mt-2 text-center text-xs md:text-sm text-amber-800">
               ACCESS CARD VALIDATES ENTRY FOR JUST 1 PERSON
             </p>
+            <p className="mt-3 text-center text-xs md:text-sm text-amber-700 font-medium">
+              ACCESS CARDS WILL ONLY BE SENT TO INVITED GUESTS
+            </p>
           </div>
         </div>
       </div>

@@ -1,10 +1,12 @@
 "use client";
 
 import { FC, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { ScrollReveal } from "./ScrollReveal";
 import { motion, AnimatePresence } from "motion/react";
 import { Loader2, Mail, User, MessageSquare } from "lucide-react";
 import { AccessCard } from "./AccessCard";
+import { submitRSVP } from "@/lib/api";
 
 interface RSVPFormProps {
   className?: string;
@@ -18,9 +20,19 @@ export const RSVPForm: FC<RSVPFormProps> = ({ className = "" }) => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [accessCode, setAccessCode] = useState("");
+
+  const mutation = useMutation({
+    mutationFn: submitRSVP,
+    onSuccess: (data) => {
+      setAccessCode(data.data.accessCode);
+    },
+    onError: (error: Error) => {
+      setErrors({
+        submit: error.message || "An error occurred. Please try again.",
+      });
+    },
+  });
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -48,39 +60,11 @@ export const RSVPForm: FC<RSVPFormProps> = ({ className = "" }) => {
 
     if (!validateForm()) return;
 
-    setIsSubmitting(true);
-
-    try {
-      const response = await fetch("/api/rsvp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          goodwillMessage: formData.goodwillMessage,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to submit RSVP");
-      }
-
-      setAccessCode(data.data.accessCode);
-      setIsSubmitting(false);
-      setIsSuccess(true);
-    } catch (error) {
-      setIsSubmitting(false);
-      setErrors({
-        submit:
-          error instanceof Error
-            ? error.message
-            : "An error occurred. Please try again.",
-      });
-    }
+    mutation.mutate({
+      name: formData.name,
+      email: formData.email,
+      goodwillMessage: formData.goodwillMessage || undefined,
+    });
   };
 
   const handleChange = (
@@ -132,7 +116,7 @@ export const RSVPForm: FC<RSVPFormProps> = ({ className = "" }) => {
         </ScrollReveal>
 
         {/* Form or Access Card */}
-        {isSuccess && accessCode ? (
+        {mutation.isSuccess && accessCode ? (
           <ScrollReveal direction="up" delay={0.2} scale>
             <AccessCard name={formData.name} accessCode={accessCode} />
           </ScrollReveal>
@@ -294,12 +278,12 @@ export const RSVPForm: FC<RSVPFormProps> = ({ className = "" }) => {
             >
               <motion.button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={mutation.isPending}
                 whileHover={{
-                  scale: isSubmitting ? 1 : 1.05,
-                  rotate: isSubmitting ? 0 : [0, -1, 1, -1, 0],
+                  scale: mutation.isPending ? 1 : 1.05,
+                  rotate: mutation.isPending ? 0 : [0, -1, 1, -1, 0],
                 }}
-                whileTap={{ scale: isSubmitting ? 1 : 0.95 }}
+                whileTap={{ scale: mutation.isPending ? 1 : 0.95 }}
                 transition={{ duration: 0.3 }}
                 className="relative w-full py-6 rounded-full font-bold text-xl text-white transition-all duration-300 shadow-2xl hover:shadow-3xl overflow-hidden group disabled:opacity-70 disabled:cursor-not-allowed"
               >
@@ -320,7 +304,7 @@ export const RSVPForm: FC<RSVPFormProps> = ({ className = "" }) => {
                 />
 
                 {/* Sparkle effect on hover */}
-                {!isSubmitting && (
+                {!mutation.isPending && (
                   <motion.div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     {[...Array(6)].map((_, i) => (
                       <motion.div
@@ -345,7 +329,7 @@ export const RSVPForm: FC<RSVPFormProps> = ({ className = "" }) => {
                 )}
 
                 <span className="relative z-10 flex items-center justify-center gap-3">
-                  {isSubmitting ? (
+                  {mutation.isPending ? (
                     <>
                       <Loader2 className="w-6 h-6 animate-spin" />
                       <span

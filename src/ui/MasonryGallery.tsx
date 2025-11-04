@@ -1,8 +1,10 @@
 "use client";
 
 import { FC, useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
+import { fetchCloudinaryImages, type CloudinaryImage } from "@/lib/api";
 import {
   Play,
   X,
@@ -205,64 +207,14 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
   const observerRef = useRef<HTMLDivElement>(null);
   const itemsPerPage = 12;
 
-  // Function to load uploaded images from Cloudinary API (with localStorage fallback)
-  const loadUploadedImages = useCallback(async () => {
-    try {
-      // Try fetching from Cloudinary API first
-      const response = await fetch("/api/cloudinary/images");
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && data.images && data.images.length > 0) {
-          // Convert Cloudinary images to MediaItem format
-          const converted: MediaItem[] = data.images.map((item: any, index: number) => {
-            // Determine span based on aspect ratio if available
-            let span: "tall" | "wide" | "normal" = "normal";
-            if (item.width && item.height) {
-              const ratio = item.width / item.height;
-              if (ratio < 0.7) span = "tall";
-              else if (ratio > 1.3) span = "wide";
-            }
-            
-            return {
-              id: 1000000 + index, // High ID to avoid conflicts
-              src: item.url,
-              alt: `Wedding Day Photo ${index + 1}`,
-              category: "Wedding Day",
-              type: "image",
-              span,
-            };
-          });
-          setUploadedImages(converted);
-          // Sync to localStorage
-          try {
-            const itemsToStore = data.images.map((img: any) => ({
-              id: img.id,
-              url: img.url,
-              width: img.width,
-              height: img.height,
-              createdAt: img.createdAt,
-            }));
-            localStorage.setItem("live-uploads", JSON.stringify(itemsToStore));
-          } catch {
-            // ignore
-          }
-          return;
-        }
-      }
-      
-      // Fallback to localStorage if API fails or returns no images
-      const raw = localStorage.getItem("live-uploads");
-      if (raw) {
-        const uploaded = JSON.parse(raw) as Array<{
-          id: string;
-          url: string;
-          width?: number;
-          height?: number;
-          createdAt?: string;
-        }>;
-        
-        // Convert uploaded images to MediaItem format
-        const converted: MediaItem[] = uploaded.map((item, index) => {
+  // Load uploaded images using TanStack Query
+  const { data: cloudinaryData, isError } = useQuery({
+    queryKey: ["cloudinary-images"],
+    queryFn: fetchCloudinaryImages,
+    select: (data) => {
+      if (data.success && data.images && data.images.length > 0) {
+        // Convert Cloudinary images to MediaItem format
+        return data.images.map((item: CloudinaryImage, index: number) => {
           // Determine span based on aspect ratio if available
           let span: "tall" | "wide" | "normal" = "normal";
           if (item.width && item.height) {
@@ -270,23 +222,46 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
             if (ratio < 0.7) span = "tall";
             else if (ratio > 1.3) span = "wide";
           }
-          
+
           return {
             id: 1000000 + index, // High ID to avoid conflicts
             src: item.url,
             alt: `Wedding Day Photo ${index + 1}`,
             category: "Wedding Day",
-            type: "image",
+            type: "image" as const,
             span,
           };
         });
-        setUploadedImages(converted);
-      } else {
-        setUploadedImages([]);
       }
-    } catch (error) {
-      console.error("Error loading uploaded images:", error);
-      // Fallback to localStorage on error
+      return [];
+    },
+  });
+
+  // Handle successful data fetch
+  useEffect(() => {
+    if (cloudinaryData && cloudinaryData.length > 0) {
+      setUploadedImages(cloudinaryData);
+      // Sync to localStorage
+      try {
+        const itemsToStore = cloudinaryData.map(
+          (img: MediaItem, index: number) => ({
+            id: String(img.id),
+            url: img.src,
+            width: undefined,
+            height: undefined,
+            createdAt: undefined,
+          })
+        );
+        localStorage.setItem("live-uploads", JSON.stringify(itemsToStore));
+      } catch {
+        // ignore
+      }
+    }
+  }, [cloudinaryData]);
+
+  // Fallback to localStorage on error
+  useEffect(() => {
+    if (isError) {
       try {
         const raw = localStorage.getItem("live-uploads");
         if (raw) {
@@ -297,7 +272,7 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
             height?: number;
             createdAt?: string;
           }>;
-          
+
           const converted: MediaItem[] = uploaded.map((item, index) => {
             let span: "tall" | "wide" | "normal" = "normal";
             if (item.width && item.height) {
@@ -305,56 +280,54 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
               if (ratio < 0.7) span = "tall";
               else if (ratio > 1.3) span = "wide";
             }
-            
+
             return {
               id: 1000000 + index,
               src: item.url,
               alt: `Wedding Day Photo ${index + 1}`,
               category: "Wedding Day",
-              type: "image",
+              type: "image" as const,
               span,
             };
           });
           setUploadedImages(converted);
+        } else {
+          setUploadedImages([]);
         }
       } catch {
         setUploadedImages([]);
       }
     }
-  }, []);
+  }, [isError]);
 
-  // Load uploaded images on mount
-  useEffect(() => {
-    loadUploadedImages();
-  }, [loadUploadedImages]);
+  // Listen for localStorage changes and refetch when needed
+  const queryClient = useQueryClient();
 
-  // Listen for localStorage changes (when new images are uploaded)
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "live-uploads") {
-        loadUploadedImages();
+        // Invalidate query to refetch from API
+        queryClient.invalidateQueries({ queryKey: ["cloudinary-images"] });
       }
     };
 
     // Also listen for custom events (when same-tab updates happen)
     const handleCustomStorageChange = () => {
-      loadUploadedImages();
+      queryClient.invalidateQueries({ queryKey: ["cloudinary-images"] });
     };
 
     window.addEventListener("storage", handleStorageChange);
     window.addEventListener("live-uploads-updated", handleCustomStorageChange);
 
-    // Poll for changes from Cloudinary (every 30 seconds)
-    const interval = setInterval(() => {
-      loadUploadedImages();
-    }, 30000);
-
     return () => {
       window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("live-uploads-updated", handleCustomStorageChange);
-      clearInterval(interval);
+      window.removeEventListener(
+        "live-uploads-updated",
+        handleCustomStorageChange
+      );
     };
-  }, [loadUploadedImages]);
+    // Note: Polling is handled by TanStack Query's refetchInterval
+  }, [queryClient]);
 
   // Combine default items with uploaded images
   const allItems = useMemo(() => {
@@ -367,7 +340,9 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
   ];
 
   const allFilteredItems =
-    filter === "All" ? allItems : allItems.filter((item) => item.category === filter);
+    filter === "All"
+      ? allItems
+      : allItems.filter((item) => item.category === filter);
 
   const filteredItems = displayedItems.filter((item) =>
     filter === "All" ? true : item.category === filter
@@ -403,7 +378,10 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
 
   // Initial load and reset when filter or items change
   useEffect(() => {
-    const filtered = filter === "All" ? allItems : allItems.filter((item) => item.category === filter);
+    const filtered =
+      filter === "All"
+        ? allItems
+        : allItems.filter((item) => item.category === filter);
     setDisplayedItems(filtered.slice(0, itemsPerPage));
     setPage(2);
   }, [filter, allItems]);

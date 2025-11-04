@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "motion/react";
+import {
+  fetchAdminStats,
+  fetchAdminAttendees,
+  deleteRSVP,
+  type AdminStats,
+  type Attendee,
+} from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -54,77 +62,79 @@ export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [attendees, setAttendees] = useState<Attendee[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
-  const [actionLoading, setActionLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   // Check if already authenticated in session
   useEffect(() => {
     const authenticated = sessionStorage.getItem("adminAuth");
-    if (authenticated === "true") {
+    const storedPassword = sessionStorage.getItem("adminPassword");
+    if (authenticated === "true" && storedPassword) {
       setIsAuthenticated(true);
-      fetchData(sessionStorage.getItem("adminPassword") || "");
     }
   }, []);
+
+  // Login mutation
+  const loginMutation = useMutation({
+    mutationFn: (pass: string) => fetchAdminStats(pass),
+    onSuccess: () => {
+      sessionStorage.setItem("adminAuth", "true");
+      sessionStorage.setItem("adminPassword", password);
+      setIsAuthenticated(true);
+      setError("");
+    },
+    onError: () => {
+      setError("Invalid password");
+    },
+  });
+
+  // Get stored password from session (for use in queries)
+  const getStoredPassword = () => {
+    if (typeof window === "undefined") return "";
+    return sessionStorage.getItem("adminPassword") || "";
+  };
+
+  // Stats query (only runs when authenticated)
+  const { data: statsData } = useQuery({
+    queryKey: ["admin-stats", isAuthenticated],
+    queryFn: () => fetchAdminStats(getStoredPassword()),
+    enabled: isAuthenticated && !!getStoredPassword(),
+    select: (data) => data.stats || null,
+  });
+
+  // Attendees query (only runs when authenticated)
+  const { data: attendeesData } = useQuery({
+    queryKey: ["admin-attendees", isAuthenticated],
+    queryFn: () => fetchAdminAttendees(getStoredPassword()),
+    enabled: isAuthenticated && !!getStoredPassword(),
+    select: (data) => data.attendees || [],
+  });
+
+  const stats = statsData as Stats | null;
+  const attendees = attendeesData || [];
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: ({ pass, id }: { pass: string; id: number }) =>
+      deleteRSVP(pass, id),
+    onSuccess: () => {
+      // Invalidate and refetch queries
+      queryClient.invalidateQueries({ queryKey: ["admin-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-attendees"] });
+      setConfirmOpen(false);
+      setPendingDeleteId(null);
+    },
+    onError: () => {
+      setError("Failed to delete attendee");
+    },
+  });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
-
-    try {
-      const response = await fetch("/api/admin/stats", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, action: "stats" }),
-      });
-
-      if (response.ok) {
-        sessionStorage.setItem("adminAuth", "true");
-        sessionStorage.setItem("adminPassword", password);
-        setIsAuthenticated(true);
-        await fetchData(password);
-      } else {
-        setError("Invalid password");
-      }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchData = async (pass: string) => {
-    try {
-      // Fetch stats
-      const statsRes = await fetch("/api/admin/stats", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: pass, action: "stats" }),
-      });
-      if (statsRes.ok) {
-        const data = await statsRes.json();
-        setStats(data.stats);
-      }
-
-      // Fetch attendees
-      const attendeesRes = await fetch("/api/admin/stats", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: pass, action: "attendees" }),
-      });
-      if (attendeesRes.ok) {
-        const data = await attendeesRes.json();
-        setAttendees(data.attendees);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    loginMutation.mutate(password);
   };
 
   const handleLogout = () => {
@@ -148,34 +158,10 @@ export default function AdminDashboard() {
     setConfirmOpen(true);
   };
 
-  const confirmDelete = async () => {
+  const confirmDelete = () => {
     if (!pendingDeleteId) return;
-    setActionLoading(true);
-    try {
-      const pass = sessionStorage.getItem("adminPassword") || password;
-      const res = await fetch("/api/admin/stats", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          password: pass,
-          action: "delete",
-          id: pendingDeleteId,
-        }),
-      });
-      if (res.ok) {
-        setAttendees((prev) => prev.filter((a) => a.id !== pendingDeleteId));
-        fetchData(pass);
-        setConfirmOpen(false);
-        setPendingDeleteId(null);
-      } else {
-        setError("Failed to delete attendee");
-      }
-    } catch (e) {
-      console.error(e);
-      setError("An error occurred while deleting attendee");
-    } finally {
-      setActionLoading(false);
-    }
+    const pass = getStoredPassword() || password;
+    deleteMutation.mutate({ pass, id: pendingDeleteId });
   };
 
   const exportToCSV = () => {
@@ -242,7 +228,7 @@ export default function AdminDashboard() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-200 outline-none transition-all"
                 placeholder="Enter admin password"
-                disabled={loading}
+                disabled={loginMutation.isPending}
               />
             </div>
 
@@ -258,10 +244,10 @@ export default function AdminDashboard() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loginMutation.isPending}
               className="w-full bg-gradient-to-r from-rose-500 to-purple-500 text-white py-3 rounded-xl font-medium hover:from-rose-600 hover:to-purple-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
-              {loading ? "Authenticating..." : "Access Dashboard"}
+              {loginMutation.isPending ? "Authenticating..." : "Access Dashboard"}
             </button>
           </form>
         </motion.div>
@@ -676,7 +662,7 @@ export default function AdminDashboard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-            onClick={() => (!actionLoading ? setConfirmOpen(false) : null)}
+            onClick={() => (!deleteMutation.isPending ? setConfirmOpen(false) : null)}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
@@ -697,17 +683,17 @@ export default function AdminDashboard() {
                 <div className="flex items-center justify-end gap-3">
                   <button
                     onClick={() => setConfirmOpen(false)}
-                    disabled={actionLoading}
+                    disabled={deleteMutation.isPending}
                     className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={confirmDelete}
-                    disabled={actionLoading}
+                    disabled={deleteMutation.isPending}
                     className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
                   >
-                    {actionLoading ? "Deleting..." : "Delete"}
+                    {deleteMutation.isPending ? "Deleting..." : "Delete"}
                   </button>
                 </div>
               </div>
