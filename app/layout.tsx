@@ -23,7 +23,7 @@ const tangerine = Tangerine({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://shadentolu.com"),
+  metadataBase: new URL("https://shade-tolu.vercel.app"),
   title: {
     default: "Shade & Tolu Wedding - December 26, 2024 | Lagos, Nigeria",
     template: "%s | Shade & Tolu Wedding",
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://shadentolu.com",
+    url: "https://shade-tolu.vercel.app",
     siteName: "Shade & Tolu Wedding",
     title: "Shade & Tolu Wedding - December 26, 2024",
     description:
@@ -92,7 +92,7 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   alternates: {
-    canonical: "https://shadentolu.com",
+    canonical: "https://shade-tolu.vercel.app",
   },
 };
 
@@ -110,7 +110,7 @@ export default function RootLayout({
         className={`${playfairDisplaySC.variable} ${inter.variable} ${tangerine.variable} antialiased`}
       >
         <QueryProvider>
-        <SmoothScroll>{children}</SmoothScroll>
+          <SmoothScroll>{children}</SmoothScroll>
         </QueryProvider>
       </body>
     </html>
