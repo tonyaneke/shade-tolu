@@ -28,6 +28,7 @@ export function Navbar({ className = "" }: NavbarProps) {
   const navLinks = [
     { name: "Love Story", href: "/love-story" },
     { name: "Tribute", href: "/wedding-details" },
+    { name: "Live Photos", href: "/big-house" },
     { name: "Gallery", href: "/gallery" },
     { name: "Gifts", href: "/gifts" },
     { name: "RSVP", href: "/rsvp" },

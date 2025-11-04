@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState, useEffect, useRef, useCallback } from "react";
+import { FC, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -201,16 +201,96 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
   const [displayedItems, setDisplayedItems] = useState<MediaItem[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState<MediaItem[]>([]);
   const observerRef = useRef<HTMLDivElement>(null);
   const itemsPerPage = 12;
 
+  // Function to load uploaded images from localStorage
+  const loadUploadedImages = useCallback(() => {
+    try {
+      const raw = localStorage.getItem("live-uploads");
+      if (raw) {
+        const uploaded = JSON.parse(raw) as Array<{
+          id: string;
+          url: string;
+          width?: number;
+          height?: number;
+          createdAt?: string;
+        }>;
+        
+        // Convert uploaded images to MediaItem format
+        const converted: MediaItem[] = uploaded.map((item, index) => {
+          // Determine span based on aspect ratio if available
+          let span: "tall" | "wide" | "normal" = "normal";
+          if (item.width && item.height) {
+            const ratio = item.width / item.height;
+            if (ratio < 0.7) span = "tall";
+            else if (ratio > 1.3) span = "wide";
+          }
+          
+          return {
+            id: 1000000 + index, // High ID to avoid conflicts
+            src: item.url,
+            alt: `Wedding Day Photo ${index + 1}`,
+            category: "Wedding Day",
+            type: "image",
+            span,
+          };
+        });
+        setUploadedImages(converted);
+      } else {
+        setUploadedImages([]);
+      }
+    } catch (error) {
+      console.error("Error loading uploaded images:", error);
+    }
+  }, []);
+
+  // Load uploaded images on mount
+  useEffect(() => {
+    loadUploadedImages();
+  }, [loadUploadedImages]);
+
+  // Listen for localStorage changes (when new images are uploaded)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "live-uploads") {
+        loadUploadedImages();
+      }
+    };
+
+    // Also listen for custom events (when same-tab updates happen)
+    const handleCustomStorageChange = () => {
+      loadUploadedImages();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("live-uploads-updated", handleCustomStorageChange);
+
+    // Poll for changes (fallback for same-tab updates)
+    const interval = setInterval(() => {
+      loadUploadedImages();
+    }, 2000);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("live-uploads-updated", handleCustomStorageChange);
+      clearInterval(interval);
+    };
+  }, [loadUploadedImages]);
+
+  // Combine default items with uploaded images
+  const allItems = useMemo(() => {
+    return [...uploadedImages, ...items];
+  }, [uploadedImages, items]);
+
   const categories = [
     "All",
-    ...Array.from(new Set(items.map((item) => item.category))),
+    ...Array.from(new Set(allItems.map((item) => item.category))),
   ];
 
   const allFilteredItems =
-    filter === "All" ? items : items.filter((item) => item.category === filter);
+    filter === "All" ? allItems : allItems.filter((item) => item.category === filter);
 
   const filteredItems = displayedItems.filter((item) =>
     filter === "All" ? true : item.category === filter
@@ -244,17 +324,12 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
     }, 300);
   }, [page, isLoading, allFilteredItems, itemsPerPage]);
 
-  // Initial load
+  // Initial load and reset when filter or items change
   useEffect(() => {
-    setDisplayedItems(allFilteredItems.slice(0, itemsPerPage));
+    const filtered = filter === "All" ? allItems : allItems.filter((item) => item.category === filter);
+    setDisplayedItems(filtered.slice(0, itemsPerPage));
     setPage(2);
-  }, []);
-
-  // Reset when filter changes
-  useEffect(() => {
-    setDisplayedItems(allFilteredItems.slice(0, itemsPerPage));
-    setPage(2);
-  }, [filter]);
+  }, [filter, allItems]);
 
   // Infinite scroll observer
   useEffect(() => {
@@ -516,20 +591,18 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
         >
           {[
             {
-              label: "Captured Moments",
-              value: baseGalleryImages.length,
+              label: "Total Photos",
+              value: allItems.length,
               icon: Sparkles,
+            },
+            {
+              label: "Wedding Day",
+              value: uploadedImages.length,
+              icon: Heart,
             },
             {
               label: "Categories",
               value: categories.length - 1,
-              icon: Heart,
-            },
-            {
-              label: "Love Stories",
-              value: baseGalleryImages.filter(
-                (i) => i.category === "Love Story"
-              ).length,
               icon: Star,
             },
           ].map((stat, idx) => (

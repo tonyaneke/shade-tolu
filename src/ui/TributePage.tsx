@@ -41,7 +41,7 @@ export const TributePage: FC = () => {
           >
             <div className="relative aspect-[3/4] w-full max-w-md mx-auto lg:mx-0 rounded-3xl overflow-hidden shadow-2xl border-4 border-amber-200">
               <Image
-                src="https://i.postimg.cc/NftGcmJ1/Gemini-Generated-Image-chqpiochqpiochqp-1.png"
+                src="https://i.postimg.cc/YC87Nz7V/Gemini-Generated-Image-chqpiochqpiochqp-2.png"
                 alt="Mother of the Bride"
                 fill
                 className="object-cover"

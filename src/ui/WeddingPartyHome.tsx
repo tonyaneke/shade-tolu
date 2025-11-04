@@ -12,123 +12,49 @@ interface PartyMember {
   image: string;
 }
 
-const bridesmaids: PartyMember[] = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    role: "Maid of Honor",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
-  },
-  {
-    id: 2,
-    name: "Emily Chen",
-    role: "Bridesmaid",
-    image:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
-  },
-  {
-    id: 3,
-    name: "Maya Patel",
-    role: "Bridesmaid",
-    image:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
-  },
-  {
-    id: 4,
-    name: "Olivia Williams",
-    role: "Bridesmaid",
-    image:
-      "https://images.unsplash.com/photo-1488716820095-cbe80883c496?w=400&h=400&fit=crop",
-  },
-  {
-    id: 5,
-    name: "Sophia Martinez",
-    role: "Bridesmaid",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
-  },
-  {
-    id: 6,
-    name: "Isabella Garcia",
-    role: "Bridesmaid",
-    image:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop",
-  },
-  {
-    id: 7,
-    name: "Ava Thompson",
-    role: "Bridesmaid",
-    image:
-      "https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=400&h=400&fit=crop",
-  },
-  {
-    id: 8,
-    name: "Mia Anderson",
-    role: "Bridesmaid",
-    image:
-      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop",
-  },
+const bridesmaidLinks: string[] = [
+  "https://i.postimg.cc/cHKzPQnc/Judith-Haggai.jpg",
+  "https://i.postimg.cc/85qYGjR0/Kazeem-happiness.jpg",
+  "https://i.postimg.cc/zXpkSyLv/MARY-U-JONATHAN.jpg",
+  "https://i.postimg.cc/YSTRGTvZ/Opeyemi-Osho.png",
+  "https://i.postimg.cc/SRkWc4kc/Rukiat-Rahman.jpg",
 ];
 
-const groomsmen: PartyMember[] = [
-  {
-    id: 1,
-    name: "Michael Chen",
-    role: "Best Man",
-    image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
-  },
-  {
-    id: 2,
-    name: "James Rodriguez",
-    role: "Groomsman",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
-  },
-  {
-    id: 3,
-    name: "David Kim",
-    role: "Groomsman",
-    image:
-      "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&h=400&fit=crop",
-  },
-  {
-    id: 4,
-    name: "Alexander Brown",
-    role: "Groomsman",
-    image:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop",
-  },
-  {
-    id: 5,
-    name: "Daniel Wilson",
-    role: "Groomsman",
-    image:
-      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop",
-  },
-  {
-    id: 6,
-    name: "Matthew Lee",
-    role: "Groomsman",
-    image:
-      "https://images.unsplash.com/photo-1463453091185-61582044d556?w=400&h=400&fit=crop",
-  },
-  {
-    id: 7,
-    name: "Christopher Davis",
-    role: "Groomsman",
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop",
-  },
-  {
-    id: 8,
-    name: "Joshua Martinez",
-    role: "Groomsman",
-    image:
-      "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=400&h=400&fit=crop",
-  },
+const toTitleCase = (text: string) =>
+  text
+    .toLowerCase()
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+
+const nameFromUrl = (url: string) => {
+  const last = (url.split("/").pop() || "").replace(/\.[^.]+$/, "");
+  const spaced = last.replace(/[-_]+/g, " ");
+  return toTitleCase(spaced);
+};
+
+const bridesmaids: PartyMember[] = bridesmaidLinks.map((link, i) => ({
+  id: i + 1,
+  name: nameFromUrl(link),
+  role: "Bridesmaid",
+  image: link,
+}));
+
+const groomsmenLinks: string[] = [
+  "https://i.postimg.cc/cCzw2nf7/BALOGUN-OLUWATOYIN-DAVID.jpg",
+  "https://i.postimg.cc/WpYGhQxb/EMMANUEL-AKINPELU.jpg",
+  "https://i.postimg.cc/ZYs8C1X4/Kingsley.jpg",
+  "https://i.postimg.cc/jq3HLGBD/OLUWADAMILARE-ADEYINKA.jpg",
+  "https://i.postimg.cc/rFv595VR/OYAWOYE-OLUWATOBI-PAULjpeg.jpg",
+  "https://i.postimg.cc/JzNHcgYG/Sheriff-Mohammed.jpg",
 ];
+
+const groomsmen: PartyMember[] = groomsmenLinks.map((link, i) => ({
+  id: i + 1,
+  name: nameFromUrl(link),
+  role: "Groomsman",
+  image: link,
+}));
 
 const PartyMemberCard: FC<{
   member: PartyMember;

@@ -54,8 +54,8 @@ export const WelcomeSection: FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.6 }}
-            className="text-gray-700 text-2xl md:text-3xl leading-relaxed mb-10 max-w-3xl mx-auto line-clamp-3 md:line-clamp-2"
-            style={{ fontFamily: "var(--font-tangerine)" }}
+            className="text-gray-700 text-md md:text-3xl leading-relaxed mb-10 max-w-3xl mx-auto line-clamp-3 md:line-clamp-2"
+            // style={{ fontFamily: "var(--font-tangerine)" }}
           >
             We are thrilled to share this special moment with you. Join us as we
             embark on this beautiful journey of love, laughter, and happily ever

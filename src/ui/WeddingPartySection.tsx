@@ -22,75 +22,55 @@ interface WeddingPartySectionProps {
   className?: string;
 }
 
-const defaultBridesmaids: PartyMember[] = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    role: "Maid of Honor",
-    bio: "Best friend since college",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
-  },
-  {
-    id: 2,
-    name: "Emily Chen",
-    role: "Bridesmaid",
-    bio: "Sister and confidant",
-    image:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
-  },
-  {
-    id: 3,
-    name: "Maya Patel",
-    role: "Bridesmaid",
-    bio: "Childhood friend",
-    image:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop",
-  },
-  {
-    id: 4,
-    name: "Olivia Williams",
-    role: "Bridesmaid",
-    bio: "College roommate",
-    image:
-      "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop",
-  },
+// Bridesmaids will be sourced from provided links, deriving names from filenames
+const bridesmaidLinks: string[] = [
+  "https://i.postimg.cc/cHKzPQnc/Judith-Haggai.jpg",
+  "https://i.postimg.cc/85qYGjR0/Kazeem-happiness.jpg",
+  "https://i.postimg.cc/zXpkSyLv/MARY-U-JONATHAN.jpg",
+  "https://i.postimg.cc/YSTRGTvZ/Opeyemi-Osho.png",
+  "https://i.postimg.cc/SRkWc4kc/Rukiat-Rahman.jpg",
 ];
 
-const defaultGroomsmen: PartyMember[] = [
-  {
-    id: 1,
-    name: "Michael Chen",
-    role: "Best Man",
-    bio: "Brother and best friend",
-    image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
-  },
-  {
-    id: 2,
-    name: "James Wilson",
-    role: "Groomsman",
-    bio: "College roommate",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
-  },
-  {
-    id: 3,
-    name: "David Martinez",
-    role: "Groomsman",
-    bio: "Childhood friend",
-    image:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop",
-  },
-  {
-    id: 4,
-    name: "Ryan Thompson",
-    role: "Groomsman",
-    bio: "Work buddy",
-    image:
-      "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=400&h=400&fit=crop",
-  },
+const toTitleCase = (text: string) =>
+  text
+    .toLowerCase()
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+
+const nameFromUrl = (url: string) => {
+  try {
+    const last = url.split("/").pop() || "";
+    const noExt = last.replace(/\.[^.]+$/, "");
+    const spaced = noExt.replace(/[-_]+/g, " ");
+    return toTitleCase(spaced);
+  } catch {
+    return "Bridesmaid";
+  }
+};
+
+const defaultBridesmaids: PartyMember[] = bridesmaidLinks.map((link, index) => ({
+  id: index + 1,
+  name: nameFromUrl(link),
+  role: "Bridesmaid",
+  image: link,
+}));
+
+const groomsmenLinks: string[] = [
+  "https://i.postimg.cc/cCzw2nf7/BALOGUN-OLUWATOYIN-DAVID.jpg",
+  "https://i.postimg.cc/WpYGhQxb/EMMANUEL-AKINPELU.jpg",
+  "https://i.postimg.cc/ZYs8C1X4/Kingsley.jpg",
+  "https://i.postimg.cc/jq3HLGBD/OLUWADAMILARE-ADEYINKA.jpg",
+  "https://i.postimg.cc/rFv595VR/OYAWOYE-OLUWATOBI-PAULjpeg.jpg",
+  "https://i.postimg.cc/JzNHcgYG/Sheriff-Mohammed.jpg",
 ];
+
+const defaultGroomsmen: PartyMember[] = groomsmenLinks.map((link, index) => ({
+  id: index + 1,
+  name: nameFromUrl(link),
+  role: "Groomsman",
+  image: link,
+}));
 
 // Transform wedding party data to ChromaGrid format
 const transformToChromaGridItems = (

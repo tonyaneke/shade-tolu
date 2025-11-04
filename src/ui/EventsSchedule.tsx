@@ -33,7 +33,8 @@ const defaultEvents: WeddingEvent[] = [
     description:
       "Join us for our traditional Nigerian wedding ceremony as we honor our heritage and celebrate with our families in the customary way.",
     mapUrl: "https://maps.google.com/?q=K%26M+Event+Center+Ifako-Ijaiye+Lagos",
-    image: "/trad.png",
+    image:
+      "https://i.postimg.cc/HspP0Dkv/Gemini-Generated-Image-mfrenbmfrenbmfre.png",
   },
   {
     id: 2,
@@ -46,7 +47,8 @@ const defaultEvents: WeddingEvent[] = [
       "Witness our sacred vows as we exchange promises before God in the beautiful Heritage of Faith church. The ceremony will be followed by photo sessions.",
     mapUrl:
       "https://maps.google.com/?q=Heritage+of+Faith+LTV+8+Agidingbi+Lagos",
-    image: "/church.png",
+    image:
+      "https://i.postimg.cc/2jHntPwq/Gemini-Generated-Image-8q3q5u8q3q5u8q3q-1.png",
   },
   {
     id: 3,
@@ -58,7 +60,8 @@ const defaultEvents: WeddingEvent[] = [
     description:
       "Celebrate with us at an elegant reception featuring cocktails, dinner, live music, and dancing. Let's create unforgettable memories together!",
     mapUrl: "https://maps.google.com/?q=K%26M+Event+Center+Ifako-Ijaiye+Lagos",
-    image: "/nigeria-wedding.png",
+    image:
+      "https://i.postimg.cc/qvqbYsyJ/Gemini-Generated-Image-shrljpshrljpshrl-1.png",
   },
 ];
 
@@ -77,12 +80,12 @@ const EventCard: FC<{ event: WeddingEvent; index: number }> = ({
       {/* Card */}
       <div className="border border-amber-200/30 rounded-3xl overflow-hidden bg-white shadow-sm hover:shadow-lg transition-all duration-300">
         {/* Image */}
-        <div className="relative h-[590px] w-full overflow-hidden">
+        <div className="relative w-full aspect-[3/4] md:aspect-[4/5] overflow-hidden">
           <Image
             src={event.image}
             alt={event.title}
             fill
-            className="object-cover hover:scale-105 transition-transform duration-500"
+            className="object-cover object-center hover:scale-105 transition-transform duration-500"
             sizes="(max-width: 768px) 100vw, 800px"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
@@ -210,7 +213,7 @@ export const EventsSchedule: FC<EventsScheduleProps> = ({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-16 border border-amber-200/30 rounded-3xl bg-white p-8 shadow-sm"
+          className="mt-16 border border-amber-200/30 rounded-3xl bg-white p-8 shadow-sm items-center justify-center"
         >
           <h3
             className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center"
@@ -225,8 +228,7 @@ export const EventsSchedule: FC<EventsScheduleProps> = ({
                 Dress Code
               </p>
               <p className="text-gray-900 font-medium">
-                Traditional: Nigerian Attire • Church & Reception: Formal/Black
-                Tie
+                WHITE & CHAMPAGNE GOLD
               </p>
             </div>
 
@@ -236,15 +238,6 @@ export const EventsSchedule: FC<EventsScheduleProps> = ({
               </p>
               <p className="text-gray-900 font-medium">
                 Ample parking available at all venues
-              </p>
-            </div>
-
-            <div className="border border-amber-100 rounded-2xl p-5 bg-amber-50/30">
-              <p className="text-sm text-gray-600 font-semibold mb-1 uppercase tracking-wide">
-                COVID-19
-              </p>
-              <p className="text-gray-900 font-medium">
-                Please follow local health guidelines
               </p>
             </div>
 
