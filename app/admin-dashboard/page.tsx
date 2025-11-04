@@ -3,13 +3,11 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "motion/react";
-import {
-  fetchAdminStats,
-  fetchAdminAttendees,
-  deleteRSVP,
-  type AdminStats,
-  type Attendee,
-} from "@/lib/api";
+  import {
+    fetchAdminStats,
+    fetchAdminAttendees,
+    deleteRSVP,
+  } from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -142,8 +140,9 @@ export default function AdminDashboard() {
     sessionStorage.removeItem("adminPassword");
     setIsAuthenticated(false);
     setPassword("");
-    setStats(null);
-    setAttendees([]);
+    // Clear query cache on logout
+    queryClient.removeQueries({ queryKey: ["admin-stats"] });
+    queryClient.removeQueries({ queryKey: ["admin-attendees"] });
   };
 
   const filteredAttendees = attendees.filter(

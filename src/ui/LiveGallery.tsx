@@ -42,6 +42,7 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
   const [preview, setPreview] = useState<UploadedItem | null>(null);
   const [errors, setErrors] = useState<UploadError[]>([]);
   const [uploadStatuses, setUploadStatuses] = useState<UploadStatus[]>([]);
+  const [fallbackItems, setFallbackItems] = useState<UploadedItems>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const queryClient = useQueryClient();
 
@@ -67,7 +68,7 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
   };
 
   // Fetch images using TanStack Query
-  const { data: imagesData, isLoading: loading } = useQuery({
+  const { data: imagesData, isLoading: loading, isError } = useQuery({
     queryKey: ["cloudinary-images"],
     queryFn: fetchCloudinaryImages,
     refetchInterval: 30000, // Refetch every 30 seconds
@@ -83,36 +84,36 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
       }
       return [];
     },
-    onSuccess: (items) => {
-      // Sync to localStorage
-      try {
-        window.localStorage.setItem("live-uploads", JSON.stringify(items));
-        window.dispatchEvent(new Event("live-uploads-updated"));
-      } catch {
-        // ignore
-      }
-    },
-    onError: () => {
-      // Error handling - fallback is handled via useEffect
-    },
   });
 
-  // Handle localStorage fallback on error
+  // Handle successful data fetch - sync to localStorage
   useEffect(() => {
-    if (!imagesData && typeof window !== "undefined") {
+    if (imagesData && imagesData.length > 0) {
       try {
-        const raw = window.localStorage.getItem("live-uploads");
-        if (raw) {
-          const localItems = JSON.parse(raw) as UploadedItems;
-          // This will be handled by the query's error state
-        }
+        window.localStorage.setItem("live-uploads", JSON.stringify(imagesData));
+        window.dispatchEvent(new Event("live-uploads-updated"));
       } catch {
         // ignore
       }
     }
   }, [imagesData]);
 
-  const items = imagesData || [];
+  // Handle localStorage fallback on error
+  useEffect(() => {
+    if (isError && typeof window !== "undefined") {
+      try {
+        const raw = window.localStorage.getItem("live-uploads");
+        if (raw) {
+          const localItems = JSON.parse(raw) as UploadedItems;
+          setFallbackItems(localItems);
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }, [isError]);
+
+  const items = imagesData || fallbackItems;
 
   // Upload mutation
   const uploadMutation = useMutation({
