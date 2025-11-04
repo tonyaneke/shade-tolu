@@ -73,13 +73,13 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
     queryFn: fetchCloudinaryImages,
     refetchInterval: 30000, // Refetch every 30 seconds
     select: (data) => {
-      if (data.success && data.images) {
+        if (data.success && data.images) {
         return data.images.map((img: CloudinaryImage) => ({
-          id: img.id,
-          url: optimized(img.url),
-          width: img.width,
-          height: img.height,
-          createdAt: img.createdAt,
+            id: img.id,
+            url: optimized(img.url),
+            width: img.width,
+            height: img.height,
+            createdAt: img.createdAt,
         })) as UploadedItems;
       }
       return [];
@@ -89,13 +89,13 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
   // Handle successful data fetch - sync to localStorage
   useEffect(() => {
     if (imagesData && imagesData.length > 0) {
-      try {
+          try {
         window.localStorage.setItem("live-uploads", JSON.stringify(imagesData));
         window.dispatchEvent(new Event("live-uploads-updated"));
-      } catch {
-        // ignore
-      }
-    }
+          } catch {
+            // ignore
+          }
+        }
   }, [imagesData]);
 
   // Handle localStorage fallback on error
@@ -203,7 +203,7 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
       const uploadPromises = validFiles.map(async (file) => {
         try {
           const data = await uploadMutation.mutateAsync(file);
-          
+
           const url = optimized(data.secure_url || data.url);
           const uploadedItem: UploadedItem = {
             id: data.asset_id || data.public_id || `${file.name}-${Date.now()}`,
@@ -212,7 +212,7 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
             height: data.height,
             createdAt: data.created_at || new Date().toISOString(),
           };
-
+          
           // Update status to success
           setUploadStatuses((prev) =>
             prev.map((s) =>

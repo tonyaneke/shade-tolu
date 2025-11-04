@@ -61,10 +61,10 @@ export const RSVPForm: FC<RSVPFormProps> = ({ className = "" }) => {
     if (!validateForm()) return;
 
     mutation.mutate({
-      name: formData.name,
-      email: formData.email,
+          name: formData.name,
+          email: formData.email,
       goodwillMessage: formData.goodwillMessage || undefined,
-    });
+      });
   };
 
   const handleChange = (

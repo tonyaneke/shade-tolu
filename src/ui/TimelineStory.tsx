@@ -254,22 +254,6 @@ export const TimelineStory: FC<TimelineStoryProps> = ({
                             : ""
                         }`}
                       >
-                        <motion.div
-                          className="inline-block mb-3 px-4 py-1.5 bg-gradient-to-r from-amber-400/20 to-yellow-400/20 backdrop-blur-sm rounded-full border border-amber-400/30"
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={
-                            isFirstTwo ? { opacity: 1, scale: 1 } : undefined
-                          }
-                          whileInView={
-                            !isFirstTwo ? { opacity: 1, scale: 1 } : undefined
-                          }
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.3, delay: baseDelay + 0.2 }}
-                        >
-                          <p className="text-amber-700 font-semibold text-sm tracking-wider uppercase">
-                            {event.date}
-                          </p>
-                        </motion.div>
                         <motion.h3
                           className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight tracking-tight"
                           initial={{ opacity: 0, y: 10 }}

@@ -110,7 +110,7 @@ export default function RootLayout({
         className={`${playfairDisplaySC.variable} ${inter.variable} ${tangerine.variable} antialiased`}
       >
         <QueryProvider>
-          <SmoothScroll>{children}</SmoothScroll>
+        <SmoothScroll>{children}</SmoothScroll>
         </QueryProvider>
       </body>
     </html>
