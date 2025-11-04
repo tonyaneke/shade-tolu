@@ -66,7 +66,7 @@ export const metadata: Metadata = {
       "Join us as we celebrate our love on December 26, 2024, in Lagos, Nigeria. Share in our joy as we begin our journey together.",
     images: [
       {
-        url: "/first.jpg",
+        url: "/og-image",
         width: 1200,
         height: 630,
         alt: "Shade & Tolu Wedding",
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     title: "Shade & Tolu Wedding - December 26, 2024",
     description:
       "Join us as we celebrate our love on December 26, 2024, in Lagos, Nigeria.",
-    images: ["/first.jpg"],
+    images: ["/og-image"],
     creator: "@shadentolu",
   },
   viewport: {

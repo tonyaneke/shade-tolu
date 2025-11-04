@@ -205,9 +205,52 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
   const observerRef = useRef<HTMLDivElement>(null);
   const itemsPerPage = 12;
 
-  // Function to load uploaded images from localStorage
-  const loadUploadedImages = useCallback(() => {
+  // Function to load uploaded images from Cloudinary API (with localStorage fallback)
+  const loadUploadedImages = useCallback(async () => {
     try {
+      // Try fetching from Cloudinary API first
+      const response = await fetch("/api/cloudinary/images");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.images && data.images.length > 0) {
+          // Convert Cloudinary images to MediaItem format
+          const converted: MediaItem[] = data.images.map((item: any, index: number) => {
+            // Determine span based on aspect ratio if available
+            let span: "tall" | "wide" | "normal" = "normal";
+            if (item.width && item.height) {
+              const ratio = item.width / item.height;
+              if (ratio < 0.7) span = "tall";
+              else if (ratio > 1.3) span = "wide";
+            }
+            
+            return {
+              id: 1000000 + index, // High ID to avoid conflicts
+              src: item.url,
+              alt: `Wedding Day Photo ${index + 1}`,
+              category: "Wedding Day",
+              type: "image",
+              span,
+            };
+          });
+          setUploadedImages(converted);
+          // Sync to localStorage
+          try {
+            const itemsToStore = data.images.map((img: any) => ({
+              id: img.id,
+              url: img.url,
+              width: img.width,
+              height: img.height,
+              createdAt: img.createdAt,
+            }));
+            localStorage.setItem("live-uploads", JSON.stringify(itemsToStore));
+          } catch {
+            // ignore
+          }
+          return;
+        }
+      }
+      
+      // Fallback to localStorage if API fails or returns no images
       const raw = localStorage.getItem("live-uploads");
       if (raw) {
         const uploaded = JSON.parse(raw) as Array<{
@@ -243,6 +286,40 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
       }
     } catch (error) {
       console.error("Error loading uploaded images:", error);
+      // Fallback to localStorage on error
+      try {
+        const raw = localStorage.getItem("live-uploads");
+        if (raw) {
+          const uploaded = JSON.parse(raw) as Array<{
+            id: string;
+            url: string;
+            width?: number;
+            height?: number;
+            createdAt?: string;
+          }>;
+          
+          const converted: MediaItem[] = uploaded.map((item, index) => {
+            let span: "tall" | "wide" | "normal" = "normal";
+            if (item.width && item.height) {
+              const ratio = item.width / item.height;
+              if (ratio < 0.7) span = "tall";
+              else if (ratio > 1.3) span = "wide";
+            }
+            
+            return {
+              id: 1000000 + index,
+              src: item.url,
+              alt: `Wedding Day Photo ${index + 1}`,
+              category: "Wedding Day",
+              type: "image",
+              span,
+            };
+          });
+          setUploadedImages(converted);
+        }
+      } catch {
+        setUploadedImages([]);
+      }
     }
   }, []);
 
@@ -267,10 +344,10 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
     window.addEventListener("storage", handleStorageChange);
     window.addEventListener("live-uploads-updated", handleCustomStorageChange);
 
-    // Poll for changes (fallback for same-tab updates)
+    // Poll for changes from Cloudinary (every 30 seconds)
     const interval = setInterval(() => {
       loadUploadedImages();
-    }, 2000);
+    }, 30000);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);

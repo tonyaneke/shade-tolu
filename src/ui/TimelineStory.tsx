@@ -119,7 +119,7 @@ export const TimelineStory: FC<TimelineStoryProps> = ({
 
   const getYouTubeEmbedUrl = (url: string) => {
     const videoId = url.split("v=")[1]?.split("&")[0];
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    return `https://www.youtube.com/embed/${videoId}?si=lhsbP7iBpqgYZxjN&autoplay=1`;
   };
 
   return (
@@ -137,50 +137,45 @@ export const TimelineStory: FC<TimelineStoryProps> = ({
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Section Title - Champagne Gold Theme */}
         <div className="text-center mb-20">
-          {/* Our Journey - Fade in with scale */}
+          {/* Our Journey - Fade in with scale - Show immediately */}
           <motion.div
             className="inline-block mb-4"
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
           >
             <div className="flex items-center gap-2 text-amber-600">
               <motion.div
                 className="h-px w-12 bg-gradient-to-r from-transparent to-amber-400"
                 initial={{ width: 0 }}
-                whileInView={{ width: "3rem" }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.3 }}
+                animate={{ width: "3rem" }}
+                transition={{ duration: 0.4, delay: 0.1 }}
               />
               <motion.span
                 className="text-3xl md:text-4xl font-semibold tracking-wider"
                 style={{ fontFamily: "var(--font-tangerine)" }}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.5 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
               >
                 Our Journey
               </motion.span>
               <motion.div
                 className="h-px w-12 bg-gradient-to-l from-transparent to-amber-400"
                 initial={{ width: 0 }}
-                whileInView={{ width: "3rem" }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.3 }}
+                animate={{ width: "3rem" }}
+                transition={{ duration: 0.4, delay: 0.1 }}
               />
             </div>
           </motion.div>
 
-          {/* Our Love Story - Slide up with fade */}
+          {/* Our Love Story - Slide up with fade - Show immediately */}
           <motion.h2
             className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 bg-clip-text text-transparent mb-6"
             style={{ fontFamily: "var(--font-tangerine)" }}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.7, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
           >
             Our Love Story
           </motion.h2>
@@ -188,10 +183,9 @@ export const TimelineStory: FC<TimelineStoryProps> = ({
           {/* Decorative divider */}
           <motion.div
             className="relative inline-block"
-            initial={{ opacity: 0, scale: 0 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.9 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
           >
             <div className="w-32 h-1 bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 mx-auto rounded-full shadow-lg shadow-amber-400/50"></div>
             <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
@@ -201,10 +195,9 @@ export const TimelineStory: FC<TimelineStoryProps> = ({
           <motion.p
             className="text-gray-600 mt-6 text-3xl md:text-4xl max-w-3xl mx-auto leading-relaxed"
             style={{ fontFamily: "var(--font-tangerine)" }}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 1.1, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
           >
             Every love story is special, beautiful, and unique. Here's ours.
           </motion.p>
@@ -223,213 +216,266 @@ export const TimelineStory: FC<TimelineStoryProps> = ({
 
           {/* Timeline Events */}
           <div className="space-y-24">
-            {events.map((event, index) => (
-              <ScrollReveal
-                key={event.id}
-                direction={event.side === "left" ? "left" : "right"}
-                delay={index * 0.1}
-              >
-                <div
-                  className={`flex flex-col md:flex-row items-center gap-8 ${
-                    event.side === "right" ? "md:flex-row-reverse" : ""
-                  }`}
+            {events.map((event, index) => {
+              // First 2 events show immediately, others use scroll reveal
+              const isFirstTwo = index < 2;
+              const baseDelay = isFirstTwo ? 0.6 + index * 0.1 : 0;
+
+              return (
+                <ScrollReveal
+                  key={event.id}
+                  direction={event.side === "left" ? "left" : "right"}
+                  delay={baseDelay}
+                  duration={isFirstTwo ? 0.4 : 0.6}
                 >
-                  {/* Content */}
-                  <motion.div
-                    className="flex-1 md:text-right md:pr-12"
-                    initial={{
-                      opacity: 0,
-                      x: event.side === "left" ? -50 : 50,
-                    }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
+                  <div
+                    className={`flex flex-col md:flex-row items-center gap-6 md:gap-8 ${
+                      event.side === "right" ? "md:flex-row-reverse" : ""
+                    }`}
                   >
-                    <div
-                      className={`${
-                        event.side === "right"
-                          ? "md:text-left md:pl-12 md:pr-0"
-                          : ""
-                      }`}
+                    {/* Content */}
+                    <motion.div
+                      className="flex-1 w-full md:text-right md:pr-12"
+                      initial={{
+                        opacity: isFirstTwo ? 0 : 0,
+                        x: event.side === "left" ? -30 : 30,
+                      }}
+                      animate={isFirstTwo ? { opacity: 1, x: 0 } : undefined}
+                      whileInView={
+                        !isFirstTwo ? { opacity: 1, x: 0 } : undefined
+                      }
+                      viewport={{ once: true, amount: 0.2 }}
+                      transition={{ duration: 0.4, delay: baseDelay + 0.1 }}
                     >
-                      <motion.div
-                        className="inline-block mb-3 px-4 py-1.5 bg-gradient-to-r from-amber-400/20 to-yellow-400/20 backdrop-blur-sm rounded-full border border-amber-400/30"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: 0.3 }}
+                      <div
+                        className={`${
+                          event.side === "right"
+                            ? "md:text-left md:pl-12 md:pr-0"
+                            : ""
+                        }`}
                       >
-                        <p className="text-amber-700 font-semibold text-sm tracking-wider uppercase">
-                          {event.date}
-                        </p>
-                      </motion.div>
-                      <motion.h3
-                        className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight tracking-tight"
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.4 }}
-                      >
-                        {event.title}
-                      </motion.h3>
-                      <motion.p
-                        className="text-gray-800 text-[1.05rem] md:text-[1.125rem] leading-8 md:leading-9 max-w-prose text-justify"
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.5 }}
-                      >
-                        {event.description}
-                      </motion.p>
-                    </div>
-                  </motion.div>
-
-                  {/* Center Heart - Champagne Gold with Beaming Effect */}
-                  <motion.div
-                    className="hidden md:block relative z-10"
-                    initial={{ opacity: 0, scale: 0 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 200,
-                      damping: 15,
-                      delay: 0.3,
-                    }}
-                  >
-                    <div className="relative w-12 h-12 flex items-center justify-center">
-                      {/* Outer beaming ring */}
-                      <motion.div
-                        animate={{
-                          scale: [1, 1.5, 1],
-                          opacity: [0.6, 0, 0.6],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeOut",
-                        }}
-                        className="absolute inset-0 flex items-center justify-center"
-                      >
-                        <Heart className="w-12 h-12 text-amber-400 fill-amber-400/30" />
-                      </motion.div>
-
-                      {/* Second beaming ring */}
-                      <motion.div
-                        animate={{
-                          scale: [1, 1.8, 1],
-                          opacity: [0.4, 0, 0.4],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: "easeOut",
-                          delay: 0.5,
-                        }}
-                        className="absolute inset-0 flex items-center justify-center"
-                      >
-                        <Heart className="w-12 h-12 text-yellow-400 fill-yellow-400/20" />
-                      </motion.div>
-
-                      {/* Main heart with glow */}
-                      <motion.div
-                        className="relative z-10 w-10 h-10 rounded-full bg-transparent flex items-center justify-center"
-                        whileHover={{ scale: 1.2, rotate: 5 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                      >
-                        <Heart className="w-6 h-6 text-amber-500 fill-amber-500 drop-shadow-lg" />
-                      </motion.div>
-
-                      {/* Continuous subtle pulse on main heart */}
-                      <motion.div
-                        animate={{
-                          scale: [1, 1.1, 1],
-                        }}
-                        transition={{
-                          duration: 1.5,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                        className="absolute inset-0 flex items-center justify-center"
-                      >
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400/20 to-yellow-400/20 blur-md"></div>
-                      </motion.div>
-                    </div>
-                  </motion.div>
-
-                  {/* Image or Video */}
-                  <motion.div
-                    className="flex-1 md:pl-12"
-                    initial={{
-                      opacity: 0,
-                      scale: 0.95,
-                      x: event.side === "left" ? 50 : -50,
-                    }}
-                    whileInView={{ opacity: 1, scale: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.7, delay: 0.4 }}
-                  >
-                    <div
-                      className={`${
-                        event.side === "right" ? "md:pr-12 md:pl-0" : ""
-                      }`}
-                    >
-                      {event.youtubeUrl ? (
                         <motion.div
-                          className="relative w-full h-[640px] rounded-lg overflow-hidden shadow-sm group border-3 border-white/60 cursor-pointer"
-                          onClick={() => setSelectedVideo(event.youtubeUrl!)}
-                          whileHover={{ scale: 1.02 }}
-                          transition={{ duration: 0.3 }}
+                          className="inline-block mb-3 px-4 py-1.5 bg-gradient-to-r from-amber-400/20 to-yellow-400/20 backdrop-blur-sm rounded-full border border-amber-400/30"
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={
+                            isFirstTwo ? { opacity: 1, scale: 1 } : undefined
+                          }
+                          whileInView={
+                            !isFirstTwo ? { opacity: 1, scale: 1 } : undefined
+                          }
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.3, delay: baseDelay + 0.2 }}
                         >
-                          <Image
-                            src={event.image!}
-                            alt={event.title}
-                            fill
-                            className="object-cover"
-                          />
-                          {/* Dark overlay */}
-                          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300"></div>
-                          {/* Play button */}
-                          <motion.div
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="absolute inset-0 flex items-center justify-center"
+                          <p className="text-amber-700 font-semibold text-sm tracking-wider uppercase">
+                            {event.date}
+                          </p>
+                        </motion.div>
+                        <motion.h3
+                          className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight tracking-tight"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={
+                            isFirstTwo ? { opacity: 1, y: 0 } : undefined
+                          }
+                          whileInView={
+                            !isFirstTwo ? { opacity: 1, y: 0 } : undefined
+                          }
+                          viewport={{ once: true }}
+                          transition={{
+                            duration: 0.4,
+                            delay: baseDelay + 0.25,
+                          }}
+                        >
+                          {event.title}
+                        </motion.h3>
+                        <motion.p
+                          className="text-gray-800 text-[1.05rem] md:text-[1.125rem] leading-8 md:leading-9 max-w-prose text-justify"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={
+                            isFirstTwo ? { opacity: 1, y: 0 } : undefined
+                          }
+                          whileInView={
+                            !isFirstTwo ? { opacity: 1, y: 0 } : undefined
+                          }
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.4, delay: baseDelay + 0.3 }}
+                        >
+                          {event.description}
+                        </motion.p>
+                      </div>
+                    </motion.div>
+
+                    {/* Center Heart - Champagne Gold with Beaming Effect */}
+                    <motion.div
+                      className="hidden md:block relative z-10"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={
+                        isFirstTwo ? { opacity: 1, scale: 1 } : undefined
+                      }
+                      whileInView={
+                        !isFirstTwo ? { opacity: 1, scale: 1 } : undefined
+                      }
+                      viewport={{ once: true, amount: 0.2 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 200,
+                        damping: 15,
+                        delay: baseDelay + 0.2,
+                      }}
+                    >
+                      <div className="relative w-12 h-12 flex items-center justify-center">
+                        {/* Outer beaming ring */}
+                        <motion.div
+                          animate={{
+                            scale: [1, 1.5, 1],
+                            opacity: [0.6, 0, 0.6],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeOut",
+                          }}
+                          className="absolute inset-0 flex items-center justify-center"
+                        >
+                          <Heart className="w-12 h-12 text-amber-400 fill-amber-400/30" />
+                        </motion.div>
+
+                        {/* Second beaming ring */}
+                        <motion.div
+                          animate={{
+                            scale: [1, 1.8, 1],
+                            opacity: [0.4, 0, 0.4],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeOut",
+                            delay: 0.5,
+                          }}
+                          className="absolute inset-0 flex items-center justify-center"
+                        >
+                          <Heart className="w-12 h-12 text-yellow-400 fill-yellow-400/20" />
+                        </motion.div>
+
+                        {/* Main heart with glow */}
+                        <motion.div
+                          className="relative z-10 w-10 h-10 rounded-full bg-transparent flex items-center justify-center"
+                          whileHover={{ scale: 1.2, rotate: 5 }}
+                          transition={{ type: "spring", stiffness: 300 }}
+                        >
+                          <Heart className="w-6 h-6 text-amber-500 fill-amber-500 drop-shadow-lg" />
+                        </motion.div>
+
+                        {/* Continuous subtle pulse on main heart */}
+                        <motion.div
+                          animate={{
+                            scale: [1, 1.1, 1],
+                          }}
+                          transition={{
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          }}
+                          className="absolute inset-0 flex items-center justify-center"
+                        >
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400/20 to-yellow-400/20 blur-md"></div>
+                        </motion.div>
+                      </div>
+                    </motion.div>
+
+                    {/* Image or Video */}
+                    <div className="flex-1 w-full md:pl-12">
+                      <div
+                        className={`w-full ${
+                          event.side === "right" ? "md:pr-12 md:pl-0" : ""
+                        }`}
+                      >
+                        {event.youtubeUrl ? (
+                          <div
+                            className="relative w-full rounded-lg overflow-hidden shadow-lg group border-2 border-white/60 cursor-pointer bg-gray-50"
+                            onClick={() => setSelectedVideo(event.youtubeUrl!)}
+                            style={{ minHeight: "280px", maxHeight: "640px" }}
                           >
-                            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-2xl shadow-amber-500/50 group-hover:shadow-amber-500/70 transition-all">
-                              <Play
-                                className="w-8 h-8 text-white ml-1"
-                                fill="white"
-                              />
-                            </div>
-                          </motion.div>
-                          {/* Decorative corners - Gold */}
-                          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-400/30 to-transparent"></div>
-                          <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-yellow-400/30 to-transparent"></div>
-                        </motion.div>
-                      ) : (
-                        <motion.div
-                          className="relative w-full h-[640px] rounded-lg overflow-hidden shadow-sm group border-3 border-white/60"
-                          whileHover={{ scale: 1.02 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <Image
-                            src={event.image!}
-                            alt={event.title}
-                            fill
-                            className="object-cover transition-transform duration-700 group-hover:scale-110"
-                          />
-                          {/* Gradient Overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                          {/* Decorative corners - Gold */}
-                          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                          <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-yellow-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        </motion.div>
-                      )}
+                            {event.image && (
+                              <div
+                                className="relative w-full h-full"
+                                style={{
+                                  minHeight: "280px",
+                                  maxHeight: "640px",
+                                }}
+                              >
+                                <Image
+                                  src={event.image}
+                                  alt={event.title}
+                                  fill
+                                  className="object-contain p-2"
+                                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 800px"
+                                  priority={isFirstTwo}
+                                  unoptimized={
+                                    event.image.startsWith("http://") ||
+                                    event.image.startsWith("https://")
+                                  }
+                                />
+                              </div>
+                            )}
+                            {/* Dark overlay */}
+                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300 z-10"></div>
+                            {/* Play button */}
+                            <motion.div
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="absolute inset-0 flex items-center justify-center z-20 cursor-pointer"
+                            >
+                              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-2xl shadow-amber-500/50 group-hover:shadow-amber-500/70 transition-all">
+                                <Play
+                                  className="w-6 h-6 sm:w-8 sm:h-8 text-white ml-1"
+                                  fill="white"
+                                />
+                              </div>
+                            </motion.div>
+                            {/* Decorative corners - Gold */}
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-400/30 to-transparent z-0"></div>
+                            <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-yellow-400/30 to-transparent z-0"></div>
+                          </div>
+                        ) : (
+                          <div
+                            className="relative w-full rounded-lg overflow-hidden shadow-lg group border-2 border-white/60 bg-gray-50"
+                            style={{ minHeight: "280px", maxHeight: "640px" }}
+                          >
+                            {event.image && (
+                              <div
+                                className="relative w-full h-full"
+                                style={{
+                                  minHeight: "280px",
+                                  maxHeight: "640px",
+                                }}
+                              >
+                                <Image
+                                  src={event.image}
+                                  alt={event.title}
+                                  fill
+                                  className="object-contain p-2 transition-transform duration-700 group-hover:scale-105"
+                                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 800px"
+                                  priority={isFirstTwo}
+                                  unoptimized={
+                                    event.image.startsWith("http://") ||
+                                    event.image.startsWith("https://")
+                                  }
+                                />
+                              </div>
+                            )}
+                            {/* Gradient Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
+                            {/* Decorative corners - Gold */}
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"></div>
+                            <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-yellow-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"></div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </motion.div>
-                </div>
-              </ScrollReveal>
-            ))}
+                  </div>
+                </ScrollReveal>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -449,23 +495,29 @@ export const TimelineStory: FC<TimelineStoryProps> = ({
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", damping: 25 }}
-              className="relative w-full max-w-6xl aspect-video rounded-3xl overflow-hidden shadow-2xl"
+              className="relative w-full max-w-6xl aspect-video rounded-lg sm:rounded-3xl overflow-hidden shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}
               <button
                 onClick={() => setSelectedVideo(null)}
-                className="absolute -top-12 right-0 z-10 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center transition-colors border border-white/20"
+                className="absolute top-4 right-4 sm:-top-12 sm:right-0 z-10 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center transition-colors border border-white/20"
+                aria-label="Close video"
               >
                 <X className="w-6 h-6 text-white" />
               </button>
 
               {/* YouTube iframe */}
               <iframe
+                width="560"
+                height="315"
                 src={getYouTubeEmbedUrl(selectedVideo)}
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
+                className="w-full h-full"
+                style={{ minHeight: "200px" }}
               />
             </motion.div>
           </motion.div>

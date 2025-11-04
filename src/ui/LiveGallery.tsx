@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
-import { UploadCloud, X } from "lucide-react";
+import { UploadCloud, X, AlertCircle, CheckCircle2 } from "lucide-react";
 
 type UploadedItem = {
   id: string;
@@ -20,20 +20,29 @@ interface LiveGalleryProps {
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 const FOLDER = process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER;
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB in bytes
+
+type UploadError = {
+  id: string;
+  fileName: string;
+  message: string;
+  timestamp: number;
+};
+
+type UploadStatus = {
+  fileName: string;
+  status: "uploading" | "success" | "error";
+  error?: string;
+};
 
 export default function LiveGallery({ className = "" }: LiveGalleryProps) {
-  const [items, setItems] = useState<UploadedItems>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const raw = window.localStorage.getItem("live-uploads");
-      return raw ? (JSON.parse(raw) as UploadedItems) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [items, setItems] = useState<UploadedItems>([]);
+  const [loading, setLoading] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<UploadedItem | null>(null);
+  const [errors, setErrors] = useState<UploadError[]>([]);
+  const [uploadStatuses, setUploadStatuses] = useState<UploadStatus[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   type UploadedItems = UploadedItem[];
@@ -68,40 +77,207 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
     }
   };
 
+  // Fetch images from Cloudinary on mount and periodically
+  const fetchImages = useCallback(async () => {
+    try {
+      const response = await fetch("/api/cloudinary/images");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.images) {
+          const cloudinaryItems: UploadedItems = data.images.map((img: any) => ({
+            id: img.id,
+            url: optimized(img.url),
+            width: img.width,
+            height: img.height,
+            createdAt: img.createdAt,
+          }));
+          setItems(cloudinaryItems);
+          // Sync to localStorage
+          try {
+            window.localStorage.setItem("live-uploads", JSON.stringify(cloudinaryItems));
+          } catch {
+            // ignore
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching images from Cloudinary:", error);
+      // Fallback to localStorage if API fails
+      try {
+        const raw = window.localStorage.getItem("live-uploads");
+        if (raw) {
+          const localItems = JSON.parse(raw) as UploadedItems;
+          setItems(localItems);
+        }
+      } catch {
+        // ignore
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Fetch on mount
+  useEffect(() => {
+    fetchImages();
+  }, [fetchImages]);
+
+  // Refresh every 30 seconds to get new uploads
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchImages();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [fetchImages]);
+
+  const validateFile = (file: File): string | null => {
+    // Check file type
+    if (!/^image\//.test(file.type)) {
+      return `${file.name} is not a valid image file`;
+    }
+
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      return `${file.name} is too large (${sizeMB} MB). Maximum size is 10 MB`;
+    }
+
+    return null;
+  };
+
+  const addError = useCallback((fileName: string, message: string) => {
+    const error: UploadError = {
+      id: `${fileName}-${Date.now()}`,
+      fileName,
+      message,
+      timestamp: Date.now(),
+    };
+    setErrors((prev) => [error, ...prev]);
+    // Auto-dismiss after 8 seconds
+    setTimeout(() => {
+      setErrors((prev) => prev.filter((e) => e.id !== error.id));
+    }, 8000);
+  }, []);
+
+  const dismissError = useCallback((id: string) => {
+    setErrors((prev) => prev.filter((e) => e.id !== id));
+  }, []);
+
   const handleFiles = useCallback(
     async (files: FileList | File[]) => {
-      if (!canUpload || !CLOUD_NAME || !UPLOAD_PRESET) return;
-      const list = Array.from(files).filter((f) => /^image\//.test(f.type));
-      if (list.length === 0) return;
+      if (!canUpload || !CLOUD_NAME || !UPLOAD_PRESET) {
+        addError("Configuration", "Cloudinary is not configured. Please check your settings.");
+        return;
+      }
+
+      const fileArray = Array.from(files);
+      if (fileArray.length === 0) return;
+
+      // Validate all files first
+      const validFiles: File[] = [];
+      const validationErrors: string[] = [];
+
+      fileArray.forEach((file) => {
+        const error = validateFile(file);
+        if (error) {
+          validationErrors.push(error);
+          addError(file.name, error);
+        } else {
+          validFiles.push(file);
+        }
+      });
+
+      if (validFiles.length === 0) {
+        return; // All files failed validation
+      }
+
       setUploading(true);
+      setUploadStatuses(
+        validFiles.map((f) => ({ fileName: f.name, status: "uploading" as const }))
+      );
 
       const endpoint = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+      const successfulUploads: UploadedItem[] = [];
 
-      for (const file of list) {
+      for (let i = 0; i < validFiles.length; i++) {
+        const file = validFiles[i];
+        
         const form = new FormData();
         form.append("file", file);
         form.append("upload_preset", UPLOAD_PRESET);
         if (FOLDER) {
           form.append("folder", FOLDER);
         }
+
         try {
           const res = await fetch(endpoint, { method: "POST", body: form });
-          if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+          
+          if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}));
+            const errorMessage = errorData.error?.message || `Upload failed with status ${res.status}`;
+            throw new Error(errorMessage);
+          }
+
           const data = (await res.json()) as any;
+          
+          if (!data.secure_url && !data.url) {
+            throw new Error("Upload succeeded but no image URL was returned");
+          }
+
           const url = optimized(data.secure_url || data.url);
-          const next = [
-            { id: data.asset_id || data.public_id, url, width: data.width, height: data.height, createdAt: data.created_at },
-            ...items,
-          ];
-          persist(next);
-        } catch (e) {
-          console.error(e);
+          const uploadedItem: UploadedItem = {
+            id: data.asset_id || data.public_id || `${file.name}-${Date.now()}`,
+            url,
+            width: data.width,
+            height: data.height,
+            createdAt: data.created_at || new Date().toISOString(),
+          };
+
+          successfulUploads.push(uploadedItem);
+          
+          // Update status to success
+          setUploadStatuses((prev) =>
+            prev.map((s) =>
+              s.fileName === file.name
+                ? { ...s, status: "success" as const }
+                : s
+            )
+          );
+        } catch (error: any) {
+          const errorMessage =
+            error.message || "An unexpected error occurred during upload";
+          
+          addError(file.name, errorMessage);
+          
+          // Update status to error
+          setUploadStatuses((prev) =>
+            prev.map((s) =>
+              s.fileName === file.name
+                ? { ...s, status: "error" as const, error: errorMessage }
+                : s
+            )
+          );
         }
       }
 
-      setUploading(false);
+      // Add successful uploads to the gallery
+      if (successfulUploads.length > 0) {
+        const next = [...successfulUploads, ...items];
+        persist(next);
+        // Refresh from Cloudinary after a short delay to ensure sync
+        setTimeout(() => {
+          fetchImages();
+        }, 1000);
+      }
+
+      // Clear statuses after a delay
+      setTimeout(() => {
+        setUploadStatuses([]);
+        setUploading(false);
+      }, 2000);
     },
-    [items, canUpload, CLOUD_NAME, UPLOAD_PRESET]
+    [items, canUpload, CLOUD_NAME, UPLOAD_PRESET, addError, fetchImages]
   );
 
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -146,7 +322,7 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
           >
             Live Photos
           </motion.h1>
-          <p className="mt-3 text-amber-800/80 text-xl md:text-2xl" style={{ fontFamily: "var(--font-tangerine)" }}>
+          <p className="mt-3 text-amber-800/80 text-xl md:text-2xl">
             Share your moments from the day — photos only for now
           </p>
         </div>
@@ -181,7 +357,9 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
                   Missing Cloudinary env: set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_UPLOAD_PRESET
                 </p>
               ) : (
-                <p className="text-xs text-gray-600">JPG/PNG/WebP up to your preset limit. Uploaded to folder {FOLDER || 'wedding-uploads'}.</p>
+                <p className="text-xs text-gray-600">
+                  JPG/PNG/WebP up to 10 MB per file. Uploaded to folder {FOLDER || 'wedding-uploads'}.
+                </p>
               )}
               <input
                 ref={fileInputRef}
@@ -196,8 +374,18 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
         </div>
 
         {/* Live stream grid (no cards, thin outlines) */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          {items.map((it) => (
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full"
+            />
+            <span className="ml-3 text-amber-700">Loading photos...</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+            {items.map((it) => (
             <motion.button
               key={it.id}
               onClick={() => setPreview(it)}
@@ -213,11 +401,150 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
               />
             </motion.button>
           ))}
-        </div>
-
-        {uploading && (
-          <div className="mt-6 text-center text-amber-700 text-sm">Uploading…</div>
+          </div>
         )}
+
+        {/* Upload Status */}
+        <AnimatePresence>
+          {uploading && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mt-6 flex flex-col items-center justify-center gap-3"
+            >
+              {/* Animated upload icon */}
+              <motion.div
+                animate={{
+                  y: [0, -8, 0],
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{
+                  duration: 1.2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="relative"
+              >
+                <div className="w-12 h-12 rounded-full border-2 border-amber-500 flex items-center justify-center">
+                  <UploadCloud className="w-6 h-6 text-amber-600" />
+                </div>
+                {/* Pulsing ring */}
+                <motion.div
+                  animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [0.6, 0, 0.6],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeOut",
+                  }}
+                  className="absolute inset-0 rounded-full border-2 border-amber-400"
+                />
+              </motion.div>
+              
+              {/* Upload text with dots animation */}
+              <div className="flex items-center gap-1 text-amber-700">
+                <span className="text-sm font-medium">Uploading</span>
+                <motion.span
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    delay: 0,
+                  }}
+                >
+                  .
+                </motion.span>
+                <motion.span
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    delay: 0.3,
+                  }}
+                >
+                  .
+                </motion.span>
+                <motion.span
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    delay: 0.6,
+                  }}
+                >
+                  .
+                </motion.span>
+              </div>
+
+              {/* Upload status list */}
+              {uploadStatuses.length > 0 && (
+                <div className="mt-4 w-full max-w-md space-y-2">
+                  {uploadStatuses.map((status) => (
+                    <motion.div
+                      key={status.fileName}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="flex items-center gap-2 text-xs text-gray-600 bg-white/60 rounded-lg px-3 py-2"
+                    >
+                      {status.status === "uploading" && (
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          className="w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full"
+                        />
+                      )}
+                      {status.status === "success" && (
+                        <CheckCircle2 className="w-4 h-4 text-green-600" />
+                      )}
+                      {status.status === "error" && (
+                        <AlertCircle className="w-4 h-4 text-red-600" />
+                      )}
+                      <span className="flex-1 truncate">{status.fileName}</span>
+                      {status.status === "success" && (
+                        <span className="text-green-600 font-medium">✓</span>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Error Messages */}
+        <AnimatePresence>
+          {errors.length > 0 && (
+            <div className="mt-6 w-full max-w-4xl mx-auto space-y-2">
+              {errors.map((error) => (
+                <motion.div
+                  key={error.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl"
+                >
+                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-red-900">
+                      {error.fileName}
+                    </p>
+                    <p className="text-sm text-red-700 mt-1">{error.message}</p>
+                  </div>
+                  <button
+                    onClick={() => dismissError(error.id)}
+                    className="flex-shrink-0 text-red-600 hover:text-red-800 transition-colors"
+                    aria-label="Dismiss error"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Preview (no heavy UI) */}

@@ -23,7 +23,7 @@ export const ScrollReveal: FC<ScrollRevealProps> = ({
   once = true,
 }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once, amount: 0.3 });
+  const isInView = useInView(ref, { once, amount: 0.1, margin: "-50px" });
 
   const getInitialPosition = () => {
     switch (direction) {
@@ -58,7 +58,7 @@ export const ScrollReveal: FC<ScrollRevealProps> = ({
       }}
       animate={isInView ? getAnimatePosition() : getInitialPosition()}
       transition={{
-        duration,
+        duration: duration * 0.8, // Slightly faster
         delay,
         ease: [0.21, 0.47, 0.32, 0.98],
       }}
