@@ -20,6 +20,7 @@ export interface CloudinaryImage {
   width?: number;
   height?: number;
   createdAt?: string;
+  publicId?: string;
 }
 
 export interface CloudinaryResponse {
@@ -204,4 +205,29 @@ export async function uploadToCloudinary(
   }
 
   return data;
+}
+
+// Delete Cloudinary Images (supports bulk delete)
+export async function deleteCloudinaryImages(
+  password: string,
+  publicIds: string[]
+): Promise<{
+  success: boolean;
+  deleted: number;
+  failed: number;
+  total: number;
+  message: string;
+}> {
+  const response = await fetch("/api/cloudinary/images", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password, publicIds }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error || "Failed to delete images");
+  }
+
+  return response.json();
 }

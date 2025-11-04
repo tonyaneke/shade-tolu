@@ -63,3 +63,99 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    // Check if Cloudinary is configured
+    if (!CLOUD_NAME || !API_KEY || !API_SECRET) {
+      return NextResponse.json(
+        { error: "Cloudinary not configured" },
+        { status: 500 }
+      );
+    }
+
+    // Get password and publicIds from request body
+    const body = await request.json();
+    const { password, publicIds } = body;
+
+    // Verify admin password (same as admin stats route)
+    const ADMIN_PASSWORD = "Sade&tolu2025";
+    if (password !== ADMIN_PASSWORD) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (!publicIds || !Array.isArray(publicIds) || publicIds.length === 0) {
+      return NextResponse.json(
+        { error: "publicIds array is required" },
+        { status: 400 }
+      );
+    }
+
+    // Delete images from Cloudinary (bulk delete)
+    console.log("Attempting to delete publicIds:", publicIds);
+
+    const deleteResults = await Promise.allSettled(
+      publicIds.map(async (publicId: string) => {
+        try {
+          // Explicitly specify resource_type as 'image' and use invalidate to clear CDN cache
+          const result = await cloudinary.uploader.destroy(publicId, {
+            resource_type: "image",
+            invalidate: true,
+          });
+          console.log(`Delete result for ${publicId}:`, result);
+          return result;
+        } catch (error: any) {
+          console.error(`Error deleting ${publicId}:`, error);
+          throw error;
+        }
+      })
+    );
+
+    const successful = deleteResults.filter(
+      (result) => result.status === "fulfilled" && result.value.result === "ok"
+    ).length;
+
+    const failed = deleteResults.length - successful;
+
+    // Log failed deletions for debugging
+    const failedResults = deleteResults
+      .map((result, index) => ({ result, publicId: publicIds[index] }))
+      .filter(
+        ({ result }) =>
+          result.status === "rejected" ||
+          (result.status === "fulfilled" && result.value.result !== "ok")
+      );
+
+    if (failedResults.length > 0) {
+      console.error("Failed deletions:", failedResults);
+    }
+
+    return NextResponse.json({
+      success: true,
+      deleted: successful,
+      failed,
+      total: publicIds.length,
+      message: `${successful} image(s) deleted successfully${
+        failed > 0 ? `, ${failed} failed` : ""
+      }`,
+      details:
+        failedResults.length > 0
+          ? failedResults.map(({ publicId, result }) => ({
+              publicId,
+              error:
+                result.status === "rejected"
+                  ? result.reason?.message
+                  : result.value.result,
+            }))
+          : undefined,
+    });
+  } catch (error: any) {
+    console.error("Error deleting Cloudinary images:", error);
+    return NextResponse.json(
+      {
+        error: error.message || "An unexpected error occurred",
+      },
+      { status: 500 }
+    );
+  }
+}

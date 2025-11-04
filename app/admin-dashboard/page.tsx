@@ -3,11 +3,14 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "motion/react";
-  import {
-    fetchAdminStats,
-    fetchAdminAttendees,
-    deleteRSVP,
-  } from "@/lib/api";
+import {
+  fetchAdminStats,
+  fetchAdminAttendees,
+  deleteRSVP,
+  fetchCloudinaryImages,
+  deleteCloudinaryImages,
+  type CloudinaryImage,
+} from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -38,6 +41,12 @@ import {
   Download,
   Calendar,
   Mail,
+  Image as ImageIcon,
+  Trash2,
+  Download as DownloadIcon,
+  CheckSquare,
+  Square,
+  X,
 } from "lucide-react";
 
 interface Attendee {
@@ -63,6 +72,12 @@ export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
+  const [imageSearchTerm, setImageSearchTerm] = useState("");
+  const [selectedImages, setSelectedImages] = useState<Set<string>>(new Set());
+  const [confirmImageDelete, setConfirmImageDelete] = useState(false);
+  const [pendingDeleteImageIds, setPendingDeleteImageIds] = useState<string[]>(
+    []
+  );
   const queryClient = useQueryClient();
 
   // Check if already authenticated in session
@@ -110,8 +125,17 @@ export default function AdminDashboard() {
     select: (data) => data.attendees || [],
   });
 
+  // Images query (only runs when authenticated)
+  const { data: imagesData } = useQuery({
+    queryKey: ["cloudinary-images", isAuthenticated],
+    queryFn: fetchCloudinaryImages,
+    enabled: isAuthenticated,
+    select: (data) => data.images || [],
+  });
+
   const stats = statsData as Stats | null;
   const attendees = attendeesData || [];
+  const images = imagesData || [];
 
   // Delete mutation
   const deleteMutation = useMutation({
@@ -161,6 +185,86 @@ export default function AdminDashboard() {
     if (!pendingDeleteId) return;
     const pass = getStoredPassword() || password;
     deleteMutation.mutate({ pass, id: pendingDeleteId });
+  };
+
+  // Image management functions
+  const filteredImages = images.filter(
+    (img: CloudinaryImage) =>
+      img.url.toLowerCase().includes(imageSearchTerm.toLowerCase()) ||
+      img.publicId?.toLowerCase().includes(imageSearchTerm.toLowerCase())
+  );
+
+  const toggleImageSelection = (publicId: string) => {
+    setSelectedImages((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(publicId)) {
+        newSet.delete(publicId);
+      } else {
+        newSet.add(publicId);
+      }
+      return newSet;
+    });
+  };
+
+  const selectAllImages = () => {
+    const allPublicIds = filteredImages
+      .map((img: CloudinaryImage) => img.publicId)
+      .filter((id): id is string => !!id);
+    setSelectedImages(new Set(allPublicIds));
+  };
+
+  const deselectAllImages = () => {
+    setSelectedImages(new Set());
+  };
+
+  const downloadImage = (url: string, publicId?: string) => {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = publicId?.split("/").pop() || "image.jpg";
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Delete images mutation
+  const deleteImageMutation = useMutation({
+    mutationFn: ({ pass, publicIds }: { pass: string; publicIds: string[] }) => {
+      console.log("Deleting images with publicIds:", publicIds);
+      return deleteCloudinaryImages(pass, publicIds);
+    },
+    onSuccess: async (data) => {
+      console.log("Delete success response:", data);
+      setConfirmImageDelete(false);
+      setPendingDeleteImageIds([]);
+      setSelectedImages(new Set());
+      
+      // Show success message if some failed
+      if (data.failed > 0) {
+        setError(`Deleted ${data.deleted} image(s), but ${data.failed} failed. ${data.message}`);
+      }
+      
+      // Wait a moment for Cloudinary to propagate the deletion, then refetch
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["cloudinary-images"] });
+        queryClient.refetchQueries({ queryKey: ["cloudinary-images"] });
+      }, 500);
+    },
+    onError: (error: Error) => {
+      console.error("Delete error:", error);
+      setError(error.message || "Failed to delete images");
+    },
+  });
+
+  const openImageDeleteModal = (publicIds: string[]) => {
+    setPendingDeleteImageIds(publicIds);
+    setConfirmImageDelete(true);
+  };
+
+  const handleConfirmImageDelete = () => {
+    if (pendingDeleteImageIds.length === 0) return;
+    const pass = getStoredPassword() || password;
+    deleteImageMutation.mutate({ pass, publicIds: pendingDeleteImageIds });
   };
 
   const exportToCSV = () => {
@@ -246,7 +350,9 @@ export default function AdminDashboard() {
               disabled={loginMutation.isPending}
               className="w-full bg-gradient-to-r from-rose-500 to-purple-500 text-white py-3 rounded-xl font-medium hover:from-rose-600 hover:to-purple-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
-              {loginMutation.isPending ? "Authenticating..." : "Access Dashboard"}
+              {loginMutation.isPending
+                ? "Authenticating..."
+                : "Access Dashboard"}
             </button>
           </form>
         </motion.div>
@@ -651,6 +757,161 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* Live Photos Management */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="mt-8"
+        >
+          <Card className="bg-white/80 backdrop-blur-lg border-white/20 shadow-xl">
+            <CardHeader>
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <CardTitle className="text-2xl flex items-center gap-2">
+                    <ImageIcon className="h-6 w-6" />
+                    Live Photos Gallery
+                  </CardTitle>
+                  <CardDescription className="mt-1">
+                    Manage uploaded photos from guests ({images.length} total)
+                  </CardDescription>
+                </div>
+                <div className="flex gap-3 w-full md:w-auto">
+                  <div className="relative flex-1 md:w-64">
+                    <input
+                      type="text"
+                      placeholder="Search images..."
+                      value={imageSearchTerm}
+                      onChange={(e) => setImageSearchTerm(e.target.value)}
+                      className="w-full pl-4 pr-4 py-2 rounded-xl border border-gray-200 focus:border-rose-400 focus:ring-2 focus:ring-rose-200 outline-none transition-all"
+                    />
+                  </div>
+                  {selectedImages.size > 0 && (
+                    <button
+                      onClick={() =>
+                        openImageDeleteModal(Array.from(selectedImages))
+                      }
+                      className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-all shadow-md whitespace-nowrap"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Delete Selected ({selectedImages.size})
+                    </button>
+                  )}
+                </div>
+              </div>
+              {filteredImages.length > 0 && (
+                <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-200">
+                  <button
+                    onClick={selectAllImages}
+                    className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    <CheckSquare className="h-4 w-4" />
+                    Select All
+                  </button>
+                  <button
+                    onClick={deselectAllImages}
+                    className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    <Square className="h-4 w-4" />
+                    Deselect All
+                  </button>
+                  {selectedImages.size > 0 && (
+                    <button
+                      onClick={deselectAllImages}
+                      className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 transition-colors ml-auto"
+                    >
+                      <X className="h-4 w-4" />
+                      Clear Selection
+                    </button>
+                  )}
+                </div>
+              )}
+            </CardHeader>
+            <CardContent>
+              {filteredImages.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">
+                  {imageSearchTerm
+                    ? "No images found matching your search."
+                    : "No images uploaded yet."}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <AnimatePresence>
+                    {filteredImages.map(
+                      (image: CloudinaryImage, index: number) => {
+                        const isSelected = image.publicId
+                          ? selectedImages.has(image.publicId)
+                          : false;
+                        return (
+                          <motion.div
+                            key={image.id}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ delay: index * 0.02 }}
+                            className={`group relative aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 transition-all cursor-pointer ${
+                              isSelected
+                                ? "border-rose-500 ring-2 ring-rose-200"
+                                : "border-gray-200 hover:border-rose-300"
+                            }`}
+                            onClick={() =>
+                              image.publicId &&
+                              toggleImageSelection(image.publicId)
+                            }
+                          >
+                            <img
+                              src={image.url}
+                              alt={`Uploaded image ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                            {isSelected && (
+                              <div className="absolute top-2 right-2 bg-rose-500 rounded-full p-1.5">
+                                <CheckSquare className="h-4 w-4 text-white" />
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  downloadImage(image.url, image.publicId);
+                                }}
+                                className="p-2 bg-white/90 rounded-lg hover:bg-white transition-colors"
+                                title="Download image"
+                              >
+                                <DownloadIcon className="h-5 w-5 text-gray-700" />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  image.publicId &&
+                                    openImageDeleteModal([image.publicId]);
+                                }}
+                                className="p-2 bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
+                                title="Delete image"
+                              >
+                                <Trash2 className="h-5 w-5 text-white" />
+                              </button>
+                            </div>
+                            {image.createdAt && (
+                              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
+                                <p className="text-xs text-white">
+                                  {new Date(
+                                    image.createdAt
+                                  ).toLocaleDateString()}
+                                </p>
+                              </div>
+                            )}
+                          </motion.div>
+                        );
+                      }
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
 
       {/* Delete Confirmation Modal */}
@@ -661,7 +922,9 @@ export default function AdminDashboard() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-            onClick={() => (!deleteMutation.isPending ? setConfirmOpen(false) : null)}
+            onClick={() =>
+              !deleteMutation.isPending ? setConfirmOpen(false) : null
+            }
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
@@ -693,6 +956,62 @@ export default function AdminDashboard() {
                     className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
                   >
                     {deleteMutation.isPending ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Image Delete Confirmation Modal */}
+      <AnimatePresence>
+        {confirmImageDelete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={() =>
+              !deleteImageMutation.isPending
+                ? setConfirmImageDelete(false)
+                : null
+            }
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: "spring", damping: 20, stiffness: 200 }}
+              className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Confirm Image Deletion
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  This will permanently delete {pendingDeleteImageIds.length}{" "}
+                  image(s) from Cloudinary. This action cannot be undone.
+                </p>
+                <div className="flex items-center justify-end gap-3">
+                  <button
+                    onClick={() => setConfirmImageDelete(false)}
+                    disabled={deleteImageMutation.isPending}
+                    className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmImageDelete}
+                    disabled={deleteImageMutation.isPending}
+                    className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+                  >
+                    {deleteImageMutation.isPending
+                      ? "Deleting..."
+                      : `Delete ${pendingDeleteImageIds.length} Image${
+                          pendingDeleteImageIds.length > 1 ? "s" : ""
+                        }`}
                   </button>
                 </div>
               </div>
