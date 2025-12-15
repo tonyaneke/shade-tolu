@@ -12,7 +12,7 @@
 - Duration: 0.5s with custom easing `[0.22, 1, 0.36, 1]`
 - Applied to all pages in the `(main)` layout
 
-**Benefits:**
+**Benefits:**fhsgfjgsjfgs
 
 - Professional page-to-page transitions
 - Better perceived performance
@@ -378,12 +378,3 @@ As requested, the following were **left untouched**:
 ✅ **Mobile optimized** - Works great on all devices
 
 **Result**: A more polished, professional, and performant wedding website! 🎊
-
-
-
-
-
-
-
-
-
