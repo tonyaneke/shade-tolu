@@ -2,7 +2,7 @@
 
 import { FC, useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { Heart, Instagram, Facebook, Mail, Phone, ArrowUp } from "lucide-react";
+import { Heart, Instagram, Facebook, Phone, ArrowUp } from "lucide-react";
 
 interface FooterProps {
   className?: string;
@@ -128,22 +128,40 @@ export const Footer: FC<FooterProps> = ({ className = "" }) => {
             </h4>
             <div className="space-y-4 mb-8">
               <a
-                href="mailto:wedding@shadetolu.com"
-                className="flex items-center gap-3 text-gray-600 hover:text-amber-600 transition-all duration-300 group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-amber-50 group-hover:bg-amber-100 flex items-center justify-center transition-all duration-300 border border-amber-200 group-hover:border-amber-400 group-hover:scale-110">
-                  <Mail className="w-5 h-5 text-amber-600" />
-                </div>
-                <span className="text-sm">wedding@shadetolu.com</span>
-              </a>
-              <a
-                href="tel:+2341234567890"
-                className="flex items-center gap-3 text-gray-600 hover:text-amber-600 transition-all duration-300 group"
+                href="tel:+2348167595647"
+                className="flex items-center gap-3 text-gray-700 hover:text-amber-600 transition-all duration-300 group"
               >
                 <div className="w-12 h-12 rounded-xl bg-amber-50 group-hover:bg-amber-100 flex items-center justify-center transition-all duration-300 border border-amber-200 group-hover:border-amber-400 group-hover:scale-110">
                   <Phone className="w-5 h-5 text-amber-600" />
                 </div>
-                <span className="text-sm">+234 123 456 7890</span>
+                <div className="flex flex-col">
+                  <span className="text-base font-semibold">08167595647</span>
+                  <span className="text-xs text-gray-500">Yemi</span>
+                </div>
+              </a>
+              <a
+                href="tel:+2349066194771"
+                className="flex items-center gap-3 text-gray-700 hover:text-amber-600 transition-all duration-300 group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-amber-50 group-hover:bg-amber-100 flex items-center justify-center transition-all duration-300 border border-amber-200 group-hover:border-amber-400 group-hover:scale-110">
+                  <Phone className="w-5 h-5 text-amber-600" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-base font-semibold">09066194771</span>
+                  <span className="text-xs text-gray-500">Oyin</span>
+                </div>
+              </a>
+              <a
+                href="tel:+2348164872090"
+                className="flex items-center gap-3 text-gray-700 hover:text-amber-600 transition-all duration-300 group"
+              >
+                <div className="w-12 h-12 rounded-xl bg-amber-50 group-hover:bg-amber-100 flex items-center justify-center transition-all duration-300 border border-amber-200 group-hover:border-amber-400 group-hover:scale-110">
+                  <Phone className="w-5 h-5 text-amber-600" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-base font-semibold">08164872090</span>
+                  <span className="text-xs text-gray-500">Emma</span>
+                </div>
               </a>
             </div>
 

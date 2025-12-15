@@ -1,10 +1,8 @@
 "use client";
 
 import { FC, useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
-import { fetchCloudinaryImages, type CloudinaryImage } from "@/lib/api";
 import {
   Play,
   X,
@@ -172,26 +170,298 @@ const baseGalleryImages: Omit<MediaItem, "id">[] = [
     type: "image",
     span: "normal",
   },
+  // Added Cloudinary wedding gallery images
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791992/Shade_Et._Michael-_52_of_55_enfymw.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791987/Shade_Et._Michael-_50_of_55_udbaxj.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791976/Shade_Et._Michael-_51_of_55_k8j85e.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791976/Shade_Et._Michael-_41_of_55_gfm9xu.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791972/Shade_Et._Michael-_54_of_55_bxzet0.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791972/Shade_Et._Michael-_54_of_55_bxzet0.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791963/Shade_Et._Michael-_40_of_55_iu0ykg.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791963/Shade_Et._Michael-_43_of_55_uagvmr.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791962/Shade_Et._Michael-_42_of_55_x5t3bx.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791961/Shade_Et._Michael-_19_of_55_quuw9i.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791959/Shade_Et._Michael-_32_of_55_tohkb3.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791958/Shade_Et._Michael-_8_of_55_rihguq.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791959/Shade_Et._Michael-_32_of_55_tohkb3.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791958/Shade_Et._Michael-_8_of_55_rihguq.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791958/Shade_Et._Michael-_31_of_55_xqbbi8.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791956/Shade_Et._Michael-_30_of_55_xyldqe.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791954/Shade_Et._Michael-_29_of_55_heel5v.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791953/Shade_Et._Michael-_28_of_55_dnp2ot.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791950/Shade_Et._Michael-_15_of_55_za9ac2.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791949/Shade_Et._Michael-_9_of_55_d3zjnz.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791950/Shade_Et._Michael-_15_of_55_za9ac2.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791946/Shade_Et._Michael-_17_of_55_ibntoy.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791945/Shade_Et._Michael-_18_of_55_wyxg3j.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791943/Shade_Et._Michael-_11_of_55_aegl90.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791939/Shade_Et._Michael-_14_of_55_uzp9yy.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791938/Shade_Et._Michael-_16_of_55_hynbvs.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791934/Shade_Et._Michael-_12_of_55_rccz03.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791934/Shade_Et._Michael-_7_of_55_jg9nsc.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791932/Shade_Et._Michael-_10_of_55_j2jfyv.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791930/_KAC9295-Edit_i7u4vi.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791927/_KAC9353-Edit_satz7e.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791927/Shade_Et._Michael-_6_of_55_keumsf.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791925/_KAC8945-Edit_saracr.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791924/_KAC8635-Edit_eol4di.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791924/_KAC9283-Edit_jjzulr.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791923/_KAC9250-Edit_g8aosp.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791922/_KAC8971-Edit_gzybxw.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791921/_KAC8689-Edit_dhxqgk.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791921/_KAC8v967-Edit_yyonbh.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
+  {
+    src: "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791920/_KAC8512-Edit_kz5qns.jpg",
+    alt: "Wedding Day Moment",
+    category: "Wedding Day",
+    type: "image",
+    span: "normal",
+  },
 ];
 
-// Generate multiple copies for infinite scroll effect
-const generateInfiniteItems = (
-  baseItems: Omit<MediaItem, "id">[],
-  copies: number = 5
-): MediaItem[] => {
-  const items: MediaItem[] = [];
-  for (let i = 0; i < copies; i++) {
-    baseItems.forEach((item, index) => {
-      items.push({
-        ...item,
-        id: i * baseItems.length + index + 1,
-      });
-    });
-  }
-  return items;
-};
-
-const defaultItems: MediaItem[] = generateInfiniteItems(baseGalleryImages);
+// Use each base gallery image once with a stable ID
+// Reorder so new "Wedding Day" photos appear first, then older ones
+const defaultItems: MediaItem[] = [
+  ...baseGalleryImages.filter((item) => item.category === "Wedding Day"),
+  ...baseGalleryImages.filter((item) => item.category !== "Wedding Day"),
+].map((item, index) => ({
+  ...item,
+  id: index + 1,
+}));
 
 export const MasonryGallery: FC<MasonryGalleryProps> = ({
   items = defaultItems,
@@ -203,136 +473,15 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
   const [displayedItems, setDisplayedItems] = useState<MediaItem[]>([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState<MediaItem[]>([]);
+  const [failedImageIds, setFailedImageIds] = useState<Set<number>>(new Set());
   const observerRef = useRef<HTMLDivElement>(null);
   const itemsPerPage = 12;
 
-  // Load uploaded images using TanStack Query
-  const { data: cloudinaryData, isError } = useQuery({
-    queryKey: ["cloudinary-images"],
-    queryFn: fetchCloudinaryImages,
-    select: (data) => {
-      if (data.success && data.images && data.images.length > 0) {
-        // Convert Cloudinary images to MediaItem format
-        return data.images.map((item: CloudinaryImage, index: number) => {
-          // Determine span based on aspect ratio if available
-          let span: "tall" | "wide" | "normal" = "normal";
-          if (item.width && item.height) {
-            const ratio = item.width / item.height;
-            if (ratio < 0.7) span = "tall";
-            else if (ratio > 1.3) span = "wide";
-          }
-
-          return {
-            id: 1000000 + index, // High ID to avoid conflicts
-            src: item.url,
-            alt: `Wedding Day Photo ${index + 1}`,
-            category: "Wedding Day",
-            type: "image" as const,
-            span,
-          };
-        });
-      }
-      return [];
-    },
-  });
-
-  // Handle successful data fetch
-  useEffect(() => {
-    if (cloudinaryData && cloudinaryData.length > 0) {
-      setUploadedImages(cloudinaryData);
-      // Sync to localStorage
-      try {
-        const itemsToStore = cloudinaryData.map(
-          (img: MediaItem, index: number) => ({
-            id: String(img.id),
-            url: img.src,
-            width: undefined,
-            height: undefined,
-            createdAt: undefined,
-          })
-        );
-        localStorage.setItem("live-uploads", JSON.stringify(itemsToStore));
-      } catch {
-        // ignore
-      }
-    }
-  }, [cloudinaryData]);
-
-  // Fallback to localStorage on error
-  useEffect(() => {
-    if (isError) {
-      try {
-        const raw = localStorage.getItem("live-uploads");
-        if (raw) {
-          const uploaded = JSON.parse(raw) as Array<{
-            id: string;
-            url: string;
-            width?: number;
-            height?: number;
-            createdAt?: string;
-          }>;
-
-          const converted: MediaItem[] = uploaded.map((item, index) => {
-            let span: "tall" | "wide" | "normal" = "normal";
-            if (item.width && item.height) {
-              const ratio = item.width / item.height;
-              if (ratio < 0.7) span = "tall";
-              else if (ratio > 1.3) span = "wide";
-            }
-
-            return {
-              id: 1000000 + index,
-              src: item.url,
-              alt: `Wedding Day Photo ${index + 1}`,
-              category: "Wedding Day",
-              type: "image" as const,
-              span,
-            };
-          });
-          setUploadedImages(converted);
-        } else {
-          setUploadedImages([]);
-        }
-      } catch {
-        setUploadedImages([]);
-      }
-    }
-  }, [isError]);
-
-  // Listen for localStorage changes and refetch when needed
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "live-uploads") {
-        // Invalidate query to refetch from API
-        queryClient.invalidateQueries({ queryKey: ["cloudinary-images"] });
-      }
-    };
-
-    // Also listen for custom events (when same-tab updates happen)
-    const handleCustomStorageChange = () => {
-      queryClient.invalidateQueries({ queryKey: ["cloudinary-images"] });
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    window.addEventListener("live-uploads-updated", handleCustomStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener(
-        "live-uploads-updated",
-        handleCustomStorageChange
-      );
-    };
-    // Note: Polling is handled by TanStack Query's refetchInterval
-  }, [queryClient]);
-
-  // Combine default items with uploaded images
+  // Combine default items, filtering out failed images
   const allItems = useMemo(() => {
-    return [...uploadedImages, ...items];
-  }, [uploadedImages, items]);
+    // Filter out images that failed to load
+    return items.filter((item) => !failedImageIds.has(item.id));
+  }, [items, failedImageIds]);
 
   const categories = [
     "All",
@@ -582,6 +731,15 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
                     }
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
+                    onError={() => {
+                      // Track failed images to filter them out
+                      setFailedImageIds((prev) => new Set(prev).add(item.id));
+                    }}
+                    // Bypass Next.js image optimizer for Cloudinary and pre-optimized URLs
+                    unoptimized={
+                      item.src.includes("res.cloudinary.com") ||
+                      item.src.includes("f_auto,q_auto:good,c_limit,w_1200")
+                    }
                   />
 
                   {/* Gradient Overlay */}
@@ -652,7 +810,8 @@ export const MasonryGallery: FC<MasonryGalleryProps> = ({
             },
             {
               label: "Wedding Day",
-              value: uploadedImages.length,
+              value: allItems.filter((item) => item.category === "Wedding Day")
+                .length,
               icon: Heart,
             },
             {

@@ -84,14 +84,13 @@ export async function submitRSVP(data: RSVPData): Promise<RSVPResponse> {
 }
 
 // Cloudinary Images API
+// Temporarily disabled: avoid calling /api/cloudinary/images
 export async function fetchCloudinaryImages(): Promise<CloudinaryResponse> {
-  const response = await fetch("/api/cloudinary/images");
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch images");
-  }
-
-  return response.json();
+  return {
+    success: true,
+    images: [],
+    total: 0,
+  };
 }
 
 // Messages API

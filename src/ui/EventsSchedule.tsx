@@ -25,8 +25,21 @@ interface EventsScheduleProps {
 const defaultEvents: WeddingEvent[] = [
   {
     id: 1,
+    title: "Court Wedding",
+    time: "11:00 AM",
+    date: "November 26, 2025",
+    location: "Federal Marriage Registry, Abuja",
+    address: "Federal Marriage Registry, Abuja",
+    description:
+      "Join us for our court wedding ceremony as we honor our heritage and celebrate with our families in the customary way.",
+    mapUrl: "https://maps.google.com/?q=Federal+Marriage+Registry+Abuja",
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791958/Shade_Et._Michael-_31_of_55_xqbbi8.jpg",
+  },
+  {
+    id: 2,
     title: "Traditional Wedding",
-    time: "8:00 AM - 11:00 AM",
+    time: "11:00 AM",
     date: "December 26, 2025",
     location: "K&M Event Center",
     address: "1 Dayo Kuye Cl, Ifako-Ijaiye, Lagos, Nigeria",
@@ -34,26 +47,12 @@ const defaultEvents: WeddingEvent[] = [
       "Join us for our traditional Nigerian wedding ceremony as we honor our heritage and celebrate with our families in the customary way.",
     mapUrl: "https://maps.google.com/?q=K%26M+Event+Center+Ifako-Ijaiye+Lagos",
     image:
-      "https://i.postimg.cc/HspP0Dkv/Gemini-Generated-Image-mfrenbmfrenbmfre.png",
-  },
-  {
-    id: 2,
-    title: "Church Ceremony",
-    time: "11:00 AM - 1:00 PM",
-    date: "December 26, 2025",
-    location: "Heritage of Faith",
-    address: "Inside LTV 8 Agidingbi opposite Coca-Cola, Lagos, Nigeria",
-    description:
-      "Witness our sacred vows as we exchange promises before God in the beautiful Heritage of Faith church. The ceremony will be followed by photo sessions.",
-    mapUrl:
-      "https://maps.google.com/?q=Heritage+of+Faith+LTV+8+Agidingbi+Lagos",
-    image:
-      "https://i.postimg.cc/2jHntPwq/Gemini-Generated-Image-8q3q5u8q3q5u8q3q-1.png",
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791976/Shade_Et._Michael-_51_of_55_k8j85e.jpg",
   },
   {
     id: 3,
     title: "Reception & Dinner",
-    time: "3:00 PM - 9:00 PM",
+    time: "2:30 PM",
     date: "December 26, 2025",
     location: "K&M Event Center",
     address: "1 Dayo Kuye Cl, Ifako-Ijaiye, Lagos, Nigeria",
@@ -61,7 +60,7 @@ const defaultEvents: WeddingEvent[] = [
       "Celebrate with us at an elegant reception featuring cocktails, dinner, live music, and dancing. Let's create unforgettable memories together!",
     mapUrl: "https://maps.google.com/?q=K%26M+Event+Center+Ifako-Ijaiye+Lagos",
     image:
-      "https://i.postimg.cc/qvqbYsyJ/Gemini-Generated-Image-shrljpshrljpshrl-1.png",
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791921/_KAC8v967-Edit_yyonbh.jpg",
   },
 ];
 
@@ -178,8 +177,8 @@ export const EventsSchedule: FC<EventsScheduleProps> = ({
             className="text-gray-700 text-xl md:text-2xl max-w-2xl mx-auto"
             style={{ fontFamily: "var(--font-tangerine)" }}
           >
-            December 26, 2025 • Three beautiful celebrations in one
-            unforgettable day
+            December 26, 2025 • Two beautiful celebrations in one unforgettable
+            day
           </p>
         </motion.div>
 

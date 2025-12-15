@@ -10,29 +10,205 @@ const CircularGallery = dynamic(() => import("@/components/CircularGallery"), {
 
 const galleryItems = [
   {
-    image: "https://i.postimg.cc/d1HRKzk3/Shade-Tolulope16.jpg",
-    text: "Shade & Tolulope",
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791992/Shade_Et._Michael-_52_of_55_enfymw.jpg",
+    text: "Wedding Moment",
   },
   {
-    image: "https://i.postimg.cc/sD161Jsn/Shade-et-Tolu-Family-15.jpg",
-    text: "Family Love",
-  },
-  { image: "https://i.postimg.cc/TYRxsFjr/001.jpg", text: "Beautiful Wedding" },
-  { image: "https://i.postimg.cc/L66dDfRX/003.jpg", text: "Elegant Moments" },
-  {
-    image: "https://i.postimg.cc/CLv3Q1xg/IMG-5711.avif",
-    text: "Wedding Ceremony",
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791987/Shade_Et._Michael-_50_of_55_udbaxj.jpg",
+    text: "Wedding Moment",
   },
   {
-    image: "https://i.postimg.cc/nhg6nPm0/IMG-5837.avif",
-    text: "Special Moments",
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791976/Shade_Et._Michael-_51_of_55_k8j85e.jpg",
+    text: "Wedding Moment",
   },
-  { image: "https://i.postimg.cc/bJHMHYBM/IMG-5861.avif", text: "Celebration" },
   {
-    image: "https://i.postimg.cc/65Hkm35D/IMG-7827.jpg",
-    text: "Wedding Portrait",
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791976/Shade_Et._Michael-_41_of_55_gfm9xu.jpg",
+    text: "Wedding Moment",
   },
-  { image: "https://i.postimg.cc/9MtStXn1/IMG-9813.avif", text: "Wedding Day" },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791972/Shade_Et._Michael-_54_of_55_bxzet0.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791972/Shade_Et._Michael-_54_of_55_bxzet0.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791963/Shade_Et._Michael-_40_of_55_iu0ykg.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791963/Shade_Et._Michael-_43_of_55_uagvmr.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791962/Shade_Et._Michael-_42_of_55_x5t3bx.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791961/Shade_Et._Michael-_19_of_55_quuw9i.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791959/Shade_Et._Michael-_32_of_55_tohkb3.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791958/Shade_Et._Michael-_8_of_55_rihguq.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791959/Shade_Et._Michael-_32_of_55_tohkb3.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791958/Shade_Et._Michael-_8_of_55_rihguq.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791958/Shade_Et._Michael-_31_of_55_xqbbi8.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791956/Shade_Et._Michael-_30_of_55_xyldqe.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791954/Shade_Et._Michael-_29_of_55_heel5v.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791953/Shade_Et._Michael-_28_of_55_dnp2ot.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791950/Shade_Et._Michael-_15_of_55_za9ac2.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791949/Shade_Et._Michael-_9_of_55_d3zjnz.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791950/Shade_Et._Michael-_15_of_55_za9ac2.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791946/Shade_Et._Michael-_17_of_55_ibntoy.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791945/Shade_Et._Michael-_18_of_55_wyxg3j.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791943/Shade_Et._Michael-_11_of_55_aegl90.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791939/Shade_Et._Michael-_14_of_55_uzp9yy.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791938/Shade_Et._Michael-_16_of_55_hynbvs.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791934/Shade_Et._Michael-_12_of_55_rccz03.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791934/Shade_Et._Michael-_7_of_55_jg9nsc.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791932/Shade_Et._Michael-_10_of_55_j2jfyv.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791930/_KAC9295-Edit_i7u4vi.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791927/_KAC9353-Edit_satz7e.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791927/Shade_Et._Michael-_6_of_55_keumsf.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791925/_KAC8945-Edit_saracr.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791924/_KAC8635-Edit_eol4di.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791924/_KAC9283-Edit_jjzulr.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791923/_KAC9250-Edit_g8aosp.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791922/_KAC8971-Edit_gzybxw.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791921/_KAC8689-Edit_dhxqgk.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791921/_KAC8v967-Edit_yyonbh.jpg",
+    text: "Wedding Moment",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791920/_KAC8512-Edit_kz5qns.jpg",
+    text: "Wedding Moment",
+  },
 ];
 
 export const CoupleImagesCarousel: FC = () => {

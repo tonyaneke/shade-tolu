@@ -67,6 +67,9 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
     }
   };
 
+  // Track failed image URLs to filter them out
+  const [failedImageIds, setFailedImageIds] = useState<Set<string>>(new Set());
+
   // Fetch images using TanStack Query
   const { data: imagesData, isLoading: loading, isError } = useQuery({
     queryKey: ["cloudinary-images"],
@@ -74,13 +77,16 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
     refetchInterval: 30000, // Refetch every 30 seconds
     select: (data) => {
         if (data.success && data.images) {
-        return data.images.map((img: CloudinaryImage) => ({
+        // Filter out images that have failed to load
+        return data.images
+          .filter((img: CloudinaryImage) => !failedImageIds.has(img.id))
+          .map((img: CloudinaryImage) => ({
             id: img.id,
             url: optimized(img.url),
             width: img.width,
             height: img.height,
             createdAt: img.createdAt,
-        })) as UploadedItems;
+          })) as UploadedItems;
       }
       return [];
     },
@@ -369,6 +375,11 @@ export default function LiveGallery({ className = "" }: LiveGalleryProps) {
                 fill
                 className="object-cover object-center"
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                onError={() => {
+                  // Track failed images to filter them out
+                  setFailedImageIds((prev) => new Set(prev).add(it.id));
+                }}
+                unoptimized={it.url.startsWith("http://") || it.url.startsWith("https://")}
               />
             </motion.button>
           ))}

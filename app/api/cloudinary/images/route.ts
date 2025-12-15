@@ -37,8 +37,8 @@ export async function GET(request: NextRequest) {
       max_results: 500,
     });
 
-    // Transform Cloudinary response to our format
-    const images = (result.resources || []).map((resource: any) => ({
+    // Transform Cloudinary response to our format and validate images exist
+    const allImages = (result.resources || []).map((resource: any) => ({
       id: resource.asset_id || resource.public_id,
       url: resource.secure_url || resource.url,
       width: resource.width,
@@ -47,10 +47,33 @@ export async function GET(request: NextRequest) {
       publicId: resource.public_id,
     }));
 
+    // Filter out images that might be invalid or deleted
+    // Check if resource has valid properties
+    const validImages = allImages.filter(
+      (img: { publicId?: string; url?: string }) => {
+        // Must have a publicId and URL
+        if (!img.publicId || !img.url) return false;
+
+        // URL should be a valid Cloudinary URL
+        if (!img.url.includes("cloudinary.com")) return false;
+
+        // PublicId should not be empty
+        if (img.publicId.trim() === "") return false;
+
+        return true;
+      }
+    );
+
+    // Log filtered images for debugging
+    if (allImages.length !== validImages.length) {
+      const filteredCount = allImages.length - validImages.length;
+      console.log(`Filtered out ${filteredCount} invalid image(s)`);
+    }
+
     return NextResponse.json({
       success: true,
-      images,
-      total: images.length,
+      images: validImages,
+      total: validImages.length,
     });
   } catch (error: any) {
     console.error("Error fetching Cloudinary images:", error);

@@ -131,9 +131,8 @@ export const RegistrySection: FC<RegistrySectionProps> = ({
               If you'd like to bless us further...
             </p>
             <p className="text-gray-600 text-center leading-relaxed">
-              We're saving for our dream honeymoon and building our home
-              together. If you wish to contribute to these special milestones in
-              our journey, we would be deeply honored and grateful.
+              To help us keep things light and seamless, we would be grateful if
+              cash gifts could be sent to the account details shared. Thank you.
             </p>
           </div>
         </ScrollReveal>
@@ -141,46 +140,6 @@ export const RegistrySection: FC<RegistrySectionProps> = ({
         {/* Gift Options */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
           {/* Honeymoon Fund */}
-          <ScrollReveal direction="left" delay={0.3}>
-            <motion.div
-              whileHover={{ y: -5 }}
-              className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border border-amber-200 shadow-md"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-lg">
-                  <Plane className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-2xl font-semibold text-gray-800">
-                  Honeymoon Dreams
-                </h3>
-              </div>
-              <p className="text-gray-700 leading-relaxed">
-                Help us create unforgettable memories as we embark on our first
-                adventure as husband and wife.
-              </p>
-            </motion.div>
-          </ScrollReveal>
-
-          {/* New Home */}
-          <ScrollReveal direction="right" delay={0.3}>
-            <motion.div
-              whileHover={{ y: -5 }}
-              className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border border-amber-200 shadow-md"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-lg">
-                  <Home className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-2xl font-semibold text-gray-800">
-                  Our New Home
-                </h3>
-              </div>
-              <p className="text-gray-700 leading-relaxed">
-                Support us as we build our nest and create a warm, loving home
-                filled with beautiful memories.
-              </p>
-            </motion.div>
-          </ScrollReveal>
         </div>
 
         {/* Bank Details */}
