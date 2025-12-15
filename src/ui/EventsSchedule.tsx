@@ -30,8 +30,7 @@ const defaultEvents: WeddingEvent[] = [
     date: "November 26, 2025",
     location: "Federal Marriage Registry, Abuja",
     address: "Federal Marriage Registry, Abuja",
-    description:
-      "Join us for our court wedding ceremony as we honor our heritage and celebrate with our families in the customary way.",
+    description: "The 26th of November marked the beginning of our forever.",
     mapUrl: "https://maps.google.com/?q=Federal+Marriage+Registry+Abuja",
     image:
       "https://res.cloudinary.com/dy8f717vw/image/upload/v1765791958/Shade_Et._Michael-_31_of_55_xqbbi8.jpg",
