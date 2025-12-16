@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import Metadata from "next";
 import { Playfair_Display_SC, Inter, Tangerine } from "next/font/google";
 import "./globals.css";
 
@@ -25,17 +25,17 @@ const tangerine = Tangerine({
 export const metadata: Metadata = {
   metadataBase: new URL("https://shade-tolu.vercel.app"),
   title: {
-    default: "Shade & Tolu Wedding - December 26, 2024 | Lagos, Nigeria",
+    default: "Shade & Tolu Wedding - December 26, 2025 | Lagos, Nigeria",
     template: "%s | Shade & Tolu Wedding",
   },
   description:
-    "Join us as we celebrate the union of Shade and Tolu on December 26, 2024, in Lagos, Nigeria. RSVP, view our love story, explore wedding details, travel guide, and more.",
+    "Join us as we celebrate the union of Shade and Tolu on December 26, 2025, in Lagos, Nigeria. RSVP, view our love story, explore wedding details, travel guide, and more.",
   keywords: [
     "wedding",
     "Shade and Tolu",
     "Lagos wedding",
     "Nigeria wedding",
-    "December 26 2024",
+    "December 26 2025",
     "wedding RSVP",
     "wedding invitation",
     "Lagos Nigeria",
@@ -61,9 +61,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://shade-tolu.vercel.app",
     siteName: "Shade & Tolu Wedding",
-    title: "Shade & Tolu Wedding - December 26, 2024",
+    title: "Shade & Tolu Wedding - December 26, 2025",
     description:
-      "Join us as we celebrate our love on December 26, 2024, in Lagos, Nigeria. Share in our joy as we begin our journey together.",
+      "Join us as we celebrate our love on December 26, 2025, in Lagos, Nigeria. Share in our joy as we begin our journey together.",
     images: [
       {
         url: "/og-image",
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Shade & Tolu Wedding - December 26, 2024",
+    title: "Shade & Tolu Wedding - December 26, 2025",
     description:
       "Join us as we celebrate our love on December 26, 2024, in Lagos, Nigeria.",
     images: ["/og-image"],
